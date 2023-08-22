@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strong Password Generator</title>
+    <link rel="apple-touch-icon" sizes="57x57" href="apple-icon-57x57.png" />
+    <link rel="apple-touch-icon" sizes="60x60" href="apple-icon-60x60.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="apple-icon-72x72.png" />
+    <link rel="apple-touch-icon" sizes="76x76" href="apple-icon-76x76.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="apple-icon-114x114.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="apple-icon-120x120.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="apple-icon-144x144.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="apple-icon-152x152.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-icon-180x180.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="android-icon-192x192.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png" />
+    <meta name="theme-color" content="#ffffff" />
+    <link href="dist/main.css" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">
+</head>
+
+<body class="p-6">
+    <div x-data="passwordGenerator()" x-init="generate()" class="max-w-md mx-auto">
+        <a href="/">
+            <h1 class="text-2xl font-bold mb-3 text-indigo-600">Strong Password Generator</h1>
+        </a>
+        <p class="mb-5">Generate robust, random passwords to fortify your online security. Don't be a victim of cyber
+            attacks.
+        </p>
+        <label for="length" class="block text-sm font-medium text-gray-700">Password Length</label>
+        <input x-model="length" @input="generate()" type="number" min="6" id="length" max="100"
+            class="mt-1 block w-full py-2 px-3 border-2 border-gray-300 bg-white rounded shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm">
+        <div class="mt-3">
+            <label class="inline-flex items-center">
+                <input x-model="options.uppercase" @change="generate()" type="checkbox" class="form-checkbox">
+                <span class="ml-2">Include uppercase letters (A-Z)</span>
+            </label>
+            <label class="inline-flex items-center">
+                <input x-model="options.lowercase" @change="generate()" type="checkbox" class="form-checkbox">
+                <span class="ml-2">Include lowercase letters (a-z)</span>
+            </label>
+            <label class="inline-flex items-center">
+                <input x-model="options.numbers" @change="generate()" type="checkbox" class="form-checkbox">
+                <span class="ml-2">Include numbers (0-9)</span>
+            </label>
+            <label class="inline-flex items-center">
+                <input x-model="options.symbols" @change="generate()" type="checkbox" class="form-checkbox">
+                <span class="ml-2">Include symbols (!@#$%^&*-_/=?+.)</span>
+            </label>
+        </div>
+        <button @click="generate()"
+            class="mt-3 w-full px-6 py-1 border border-transparent rounded shadow-sm text-sm font-bold text-white bg-green-600 hover:bg-green-700">Generate
+            Password</button>
+        <textarea @click="copy()" x-ref="password" x-text="password" readonly
+            class="mt-3 w-full px-3 py-2 border-2 border-gray-300 bg-white rounded shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"></textarea>
+
+        <button @click="copy()"
+            class="relative inline-flex items-center rounded text-xs bg-indigo-500 px-3 py-1 text-sm font-semibold text-white border hover:bg-indigo-600">Copy
+            to Clipboard</button>
+        <button @click="reset()"
+            class="relative -ml-px inline-flex items-center rounded text-xs bg-gray-300 px-3 py-1 text-sm font-semibold text-gray-700 border hover:bg-gray-400">Reset
+            to Default</button>
+
+        <p x-cloak x-show="copySuccess" class="mt-3 text-sm text-green-600">Copied to clipboard!</p>
+        <p x-cloak x-show="copyFail" class="mt-3 text-sm text-red-600">Failed to copy. Please manually select and copy.
+        </p>
+        <div x-show="password" class="mt-4">
+            <h2 class="text-lg font-semibold text-gray-900">Evaluation</h2>
+            <p class="mt-2 text-sm text-gray-600">Your password's score: <span x-cloak :class="passwordScoreClass()"
+                    x-text="passwordScoreText()"></span></p>
+            <p class="mt-2 text-sm text-gray-600">Time it would take for an attacker to crack this password: <span
+                    x-text="crackTime" class="font-semibold"></span></p>
+        </div>
+    </div>
+
+    <footer class="text-center mt-6 text-sm">
+        <p>&copy; {{current_year}} <a href="https://devops.com.bd" target="_blank" rel="noopener noreferrer"
+                class="text-green-600">DevOps</a> &
+            <a href="https://github.com/SHSharkar" target="_blank" rel="noopener noreferrer" class="text-indigo-600">Md.
+                Sazzad Hossain Sharkar</a>
+        </p>
+    </footer>
+
+    <script>
+        function passwordGenerator() {
+            return {
+                length: 18,
+                password: '',
+                score: 0,
+                crackTime: '',
+                copySuccess: false,
+                copyFail: false,
+                options: {
+                    uppercase: true,
+                    lowercase: true,
+                    numbers: true,
+                    symbols: true
+                },
+                generate() {
+                    let characters = '';
+                    let specialCharacters = '!@#$%^&*-_/=?+.';
+                    if (this.options.uppercase) characters += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                    if (this.options.lowercase) characters += 'abcdefghijklmnopqrstuvwxyz';
+                    if (this.options.numbers) characters += '0123456789';
+                    if (this.options.symbols) characters += specialCharacters;
+
+                    let result = '';
+                    let charactersLength = characters.length;
+
+                    let firstCharacterOptions = characters.replace(specialCharacters, '');
+                    result += firstCharacterOptions.charAt(Math.floor(Math.random() * firstCharacterOptions.length));
+
+                    for (let i = 1; i < this.length - 1; i++) {
+                        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                    }
+
+                    let lastCharacterOptions = characters.replace(specialCharacters, '');
+                    result += lastCharacterOptions.charAt(Math.floor(Math.random() * lastCharacterOptions.length));
+
+                    this.password = result;
+                    this.evaluate(result);
+                },
+                passwordScoreText: function () {
+                    switch (this.score) {
+                        case 0:
+                            return 'too guessable';
+                        case 1:
+                            return 'very guessable';
+                        case 2:
+                            return 'somewhat guessable';
+                        case 3:
+                            return 'safely unguessable';
+                        case 4:
+                            return 'very unguessable';
+                        default:
+                            return '';
+                    }
+                },
+                passwordScoreClass() {
+                    switch (this.score) {
+                        case 0:
+                            return 'text-red-600';
+                        case 1:
+                            return 'text-orange-600';
+                        case 2:
+                            return 'text-yellow-600';
+                        case 3:
+                            return 'text-green-600';
+                        case 4:
+                            return 'text-blue-600';
+                        default:
+                            return '';
+                    }
+                },
+                evaluate(password) {
+                    let evaluation = zxcvbn(password);
+                    this.score = evaluation.score;
+                    this.crackTime = evaluation.crack_times_display.offline_slow_hashing_1e4_per_second;
+                },
+                copy() {
+                    this.$refs.password.select();
+                    if (document.execCommand('copy')) {
+                        this.copySuccess = true;
+                        this.copyFail = false;
+                    } else {
+                        this.copyFail = true;
+                        this.copySuccess = false;
+                    }
+                },
+                reset() {
+                    this.length = 18;
+                    this.options = {
+                        uppercase: true,
+                        lowercase: true,
+                        numbers: true,
+                        symbols: true
+                    };
+                    this.generate();
+                }
+            }
+        }
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const footer = document.querySelector('footer p');
+            const year = new Date().getFullYear();
+            footer.innerHTML = footer.innerHTML.replace('{{current_year}}', year);
+        });
+    </script>
+</body>
+
+</html>
