@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Strong Password Generator</title>
+    <meta name="description"
+        content="Generate robust, random passwords to fortify your online security. Don't be a victim of cyber attacks.">
+    <meta property="og:title" content="Strong Password Generator">
+    <meta property="og:description"
+        content="Generate robust, random passwords to fortify your online security. Don't be a victim of cyber attacks.">
+    <meta property="og:image" content="https://password.env.com.bd/sharing-image.jpg">
     <link rel="apple-touch-icon" sizes="57x57" href="apple-icon-57x57.png" />
     <link rel="apple-touch-icon" sizes="60x60" href="apple-icon-60x60.png" />
     <link rel="apple-touch-icon" sizes="72x72" href="apple-icon-72x72.png" />
@@ -33,14 +39,14 @@
 <body class="p-6">
     <div x-data="passwordGenerator()" x-init="generate()" class="max-w-md mx-auto">
         <a href="/">
-            <h1 class="text-2xl font-bold mb-3 text-indigo-600">Strong Password Generator</h1>
+            <h1 class="mb-3 text-2xl font-bold text-indigo-600">Strong Password Generator</h1>
         </a>
         <p class="mb-5">Generate robust, random passwords to fortify your online security. Don't be a victim of cyber
             attacks.
         </p>
         <label for="length" class="block text-sm font-medium text-gray-700">Password Length</label>
         <input x-model="length" @input="generate()" type="number" min="6" id="length" max="100"
-            class="mt-1 block w-full py-2 px-3 border-2 border-gray-300 bg-white rounded shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm">
+            class="block w-full px-3 py-2 mt-1 bg-white border-2 border-gray-300 rounded shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm">
         <div class="mt-3">
             <label class="inline-flex items-center">
                 <input x-model="options.uppercase" @change="generate()" type="checkbox" class="form-checkbox">
@@ -60,16 +66,16 @@
             </label>
         </div>
         <button @click="generate()"
-            class="mt-3 w-full px-6 py-1 border border-transparent rounded shadow-sm text-sm font-bold text-white bg-green-600 hover:bg-green-700">Generate
+            class="w-full px-6 py-1 mt-3 text-sm font-bold text-white bg-green-600 border border-transparent rounded shadow-sm hover:bg-green-700">Generate
             Password</button>
         <textarea @click="copy()" x-ref="password" x-text="password" readonly
-            class="mt-3 w-full px-3 py-2 border-2 border-gray-300 bg-white rounded shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"></textarea>
+            class="w-full px-3 py-2 mt-3 bg-white border-2 border-gray-300 rounded shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"></textarea>
 
         <button @click="copy()"
-            class="relative inline-flex items-center rounded text-xs bg-indigo-500 px-3 py-1 text-sm font-semibold text-white border hover:bg-indigo-600">Copy
+            class="relative inline-flex items-center px-3 py-1 text-xs text-sm font-semibold text-white bg-indigo-500 border rounded hover:bg-indigo-600">Copy
             to Clipboard</button>
         <button @click="reset()"
-            class="relative -ml-px inline-flex items-center rounded text-xs bg-gray-300 px-3 py-1 text-sm font-semibold text-gray-700 border hover:bg-gray-400">Reset
+            class="relative inline-flex items-center px-3 py-1 -ml-px text-xs text-sm font-semibold text-gray-700 bg-gray-300 border rounded hover:bg-gray-400">Reset
             to Default</button>
 
         <p x-cloak x-show="copySuccess" class="mt-3 text-sm text-green-600">Copied to clipboard!</p>
@@ -84,7 +90,7 @@
         </div>
     </div>
 
-    <footer class="text-center mt-6 text-sm">
+    <footer class="mt-6 text-sm text-center">
         <p>&copy; {{current_year}} <a href="https://devops.com.bd" target="_blank" rel="noopener noreferrer"
                 class="text-green-600">DevOps</a> &
             <a href="https://github.com/SHSharkar" target="_blank" rel="noopener noreferrer" class="text-indigo-600">Md.
