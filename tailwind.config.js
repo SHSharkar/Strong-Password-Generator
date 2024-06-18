@@ -1,13 +1,13 @@
 module.exports = {
-    content: ["./*.{html,js}"],
-    theme: {
-      extend: {
-        fontFamily: {
-          sans: ["JetBrains Mono", "sans-serif"],
-          display: ["JetBrains Mono", "sans-serif"],
-          body: ["JetBrains Mono", "sans-serif"]
-        }
-      }
+  content: ["./*.{html,js}"],
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ["Maven Pro", "sans-serif"],
+        display: ["Maven Pro", "sans-serif"],
+        body: ["Maven Pro", "sans-serif"],
+      },
     },
-    plugins: [require("@tailwindcss/forms")]
-  };
+  },
+  plugins: [require("@tailwindcss/forms")],
+};
