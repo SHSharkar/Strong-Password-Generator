@@ -50,23 +50,27 @@
             be a victim of cyber attacks.
         </p>
         <label for="length" class="block text-base font-medium text-gray-600">Password Length</label>
-        <input x-model="length" @input="generate()" type="number" min="6" id="length" max="100"
+        <input x-model="length" @input="updateLength()" type="number" min="6" id="length" max="100"
             class="mt-1 block w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-base font-medium text-gray-700 shadow-sm focus:border-gray-400 focus:outline-none focus:ring-gray-400 md:text-lg" />
         <div class="mt-3 grid grid-cols-2 gap-3">
             <label>
-                <input x-model="options.uppercase" @change="generate()" type="checkbox" class="form-checkbox" />
+                <input x-model="options.uppercase" @change="updateOptions('uppercase')" type="checkbox"
+                    class="form-checkbox" />
                 <span class="ml-2 text-lg">Include uppercase letters (A-Z)</span>
             </label>
             <label>
-                <input x-model="options.lowercase" @change="generate()" type="checkbox" class="form-checkbox" />
+                <input x-model="options.lowercase" @change="updateOptions('lowercase')" type="checkbox"
+                    class="form-checkbox" />
                 <span class="ml-2 text-lg">Include lowercase letters (a-z)</span>
             </label>
             <label>
-                <input x-model="options.numbers" @change="generate()" type="checkbox" class="form-checkbox" />
+                <input x-model="options.numbers" @change="updateOptions('numbers')" type="checkbox"
+                    class="form-checkbox" />
                 <span class="ml-2 text-lg">Include numbers (0-9)</span>
             </label>
             <label>
-                <input x-model="options.symbols" @change="generate()" type="checkbox" class="form-checkbox" />
+                <input x-model="options.symbols" @change="updateOptions('symbols')" type="checkbox"
+                    class="form-checkbox" />
                 <span class="ml-2 text-lg">Include symbols (!@#$%^&*-_/=?+.)</span>
             </label>
         </div>
@@ -74,10 +78,13 @@
             class="mt-3 w-full rounded border border-transparent bg-green-600 px-6 py-1 text-base font-semibold text-white shadow-sm hover:bg-green-700">
             Generate Password
         </button>
-        <textarea @click="copy()" x-ref="password" x-text="password" readonly
+        <textarea
+            @click="$clipboard(password).then(() => { copySuccess = true; setTimeout(() => { copySuccess = false }, 3000); }).catch(() => { copyFail = true; setTimeout(() => { copyFail = false }, 3000); })"
+            x-ref="password" x-text="password" readonly
             class="source-code-pro mt-3 w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-lg font-medium text-gray-700 shadow-sm focus:border-gray-400 focus:outline-none focus:ring-gray-400 md:text-xl"></textarea>
 
-        <button @click="copy()"
+        <button
+            @click="$clipboard(password).then(() => { copySuccess = true; setTimeout(() => { copySuccess = false }, 3000); }).catch(() => { copyFail = true; setTimeout(() => { copyFail = false }, 3000); })"
             class="relative inline-flex items-center rounded border bg-indigo-500 px-3 py-1 text-sm font-semibold text-white hover:bg-indigo-600">
             Copy to Clipboard
         </button>
@@ -92,6 +99,9 @@
         <p x-cloak x-show="copyFail" class="mt-3 text-base text-red-600">
             Failed to copy. Please manually select and copy.
         </p>
+
+        <p x-show="message" x-text="message" class="mt-3 text-lg text-gray-600 font-semibold"></p>
+
         <div x-show="password" class="mt-4 md:mt-8">
             <h2 class="text-xl font-semibold text-gray-700">Evaluation</h2>
             <p class="mt-2 text-base text-gray-600">
@@ -124,6 +134,7 @@
                 crackTime: "",
                 copySuccess: false,
                 copyFail: false,
+                message: "",
                 options: {
                     uppercase: true,
                     lowercase: true,
@@ -131,44 +142,110 @@
                     symbols: true,
                 },
                 generate() {
+                    const uppercaseCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                    const lowercaseCharacters = "abcdefghijklmnopqrstuvwxyz";
+                    const numberCharacters = "0123456789";
+                    const specialCharacters = "!@#$%^&*-_/=?+.";
                     let characters = "";
-                    let specialCharacters = "!@#$%^&*-_/=?+.";
+
                     if (this.options.uppercase)
-                        characters += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                        characters += uppercaseCharacters;
                     if (this.options.lowercase)
-                        characters += "abcdefghijklmnopqrstuvwxyz";
-                    if (this.options.numbers) characters += "0123456789";
-                    if (this.options.symbols) characters += specialCharacters;
+                        characters += lowercaseCharacters;
+                    if (this.options.numbers)
+                        characters += numberCharacters;
+                    if (this.options.symbols)
+                        characters += specialCharacters;
 
-                    let result = "";
-                    let charactersLength = characters.length;
+                    if (!characters.length) {
+                        this.password = "";
+                        return;
+                    }
 
-                    let firstCharacterOptions = characters.replace(
-                        specialCharacters,
-                        "",
-                    );
-                    result += firstCharacterOptions.charAt(
-                        Math.floor(Math.random() * firstCharacterOptions.length),
-                    );
+                    const result = [];
 
-                    for (let i = 1; i < this.length - 1; i++) {
-                        result += characters.charAt(
-                            Math.floor(Math.random() * charactersLength),
+                    const totalTypes = Object.values(this.options).filter(Boolean).length;
+
+                    let minCountPerType = Math.min(3, Math.floor(this.length / totalTypes));
+                    minCountPerType = Math.max(1, minCountPerType);
+
+                    let totalMinCharacters = 0;
+
+                    if (this.options.uppercase) {
+                        for (let i = 0; i < minCountPerType; i++) {
+                            result.push(
+                                uppercaseCharacters.charAt(
+                                    this.getRandomInt(uppercaseCharacters.length)
+                                )
+                            );
+                            totalMinCharacters++;
+                        }
+                    }
+
+                    if (this.options.lowercase) {
+                        for (let i = 0; i < minCountPerType; i++) {
+                            result.push(
+                                lowercaseCharacters.charAt(
+                                    this.getRandomInt(lowercaseCharacters.length)
+                                )
+                            );
+                            totalMinCharacters++;
+                        }
+                    }
+
+                    if (this.options.numbers) {
+                        for (let i = 0; i < minCountPerType; i++) {
+                            result.push(
+                                numberCharacters.charAt(
+                                    this.getRandomInt(numberCharacters.length)
+                                )
+                            );
+                            totalMinCharacters++;
+                        }
+                    }
+
+                    if (this.options.symbols) {
+                        for (let i = 0; i < minCountPerType; i++) {
+                            result.push(
+                                specialCharacters.charAt(
+                                    this.getRandomInt(specialCharacters.length)
+                                )
+                            );
+                            totalMinCharacters++;
+                        }
+                    }
+
+                    for (let i = totalMinCharacters; i < this.length; i++) {
+                        result.push(
+                            characters.charAt(
+                                this.getRandomInt(characters.length)
+                            )
                         );
                     }
 
-                    let lastCharacterOptions = characters.replace(
-                        specialCharacters,
-                        "",
-                    );
-                    result += lastCharacterOptions.charAt(
-                        Math.floor(Math.random() * lastCharacterOptions.length),
-                    );
+                    this.shuffleArray(result);
 
-                    this.password = result;
-                    this.evaluate(result);
+                    this.password = result.join('');
+
+                    this.evaluate(this.password);
+
+                    this.message = "Password generated successfully!";
+                    setTimeout(() => {
+                        this.message = "";
+                    }, 3000);
                 },
-                passwordScoreText: function () {
+                getRandomInt(max) {
+                    const array = new Uint32Array(1);
+                    window.crypto.getRandomValues(array);
+                    return array[0] % max;
+                },
+                shuffleArray(array) {
+                    for (let i = array.length - 1; i > 0; i--) {
+                        const j = this.getRandomInt(i + 1);
+                        [array[i], array[j]] = [array[j], array[i]];
+                    }
+                },
+                passwordScoreText() {
                     switch (this.score) {
                         case 0:
                             return "too guessable";
@@ -201,20 +278,10 @@
                     }
                 },
                 evaluate(password) {
-                    let evaluation = zxcvbn(password);
+                    const evaluation = zxcvbn(password);
                     this.score = evaluation.score;
                     this.crackTime =
                         evaluation.crack_times_display.offline_slow_hashing_1e4_per_second;
-                },
-                copy() {
-                    this.$refs.password.select();
-                    if (document.execCommand("copy")) {
-                        this.copySuccess = true;
-                        this.copyFail = false;
-                    } else {
-                        this.copyFail = true;
-                        this.copySuccess = false;
-                    }
                 },
                 reset() {
                     this.length = 18;
@@ -225,9 +292,40 @@
                         symbols: true,
                     };
                     this.generate();
+                    this.message = "Reset to default settings.";
+                    setTimeout(() => {
+                        this.message = "";
+                    }, 3000);
+                },
+                updateLength() {
+                    this.generate();
+                    this.message = `Password length updated to ${this.length}.`;
+                    setTimeout(() => {
+                        this.message = "";
+                    }, 3000);
+                },
+                updateOptions(option) {
+                    this.generate();
+                    const status = this.options[option] ? 'enabled' : 'disabled';
+                    const optionNames = {
+                        uppercase: 'Uppercase letters',
+                        lowercase: 'Lowercase letters',
+                        numbers: 'Numbers',
+                        symbols: 'Symbols',
+                    };
+                    this.message = `${optionNames[option]} ${status}.`;
+                    setTimeout(() => {
+                        this.message = "";
+                    }, 3000);
                 },
             };
         }
+
+        document.addEventListener('alpine:init', () => {
+            Alpine.magic('clipboard', () => subject => {
+                return navigator.clipboard.writeText(subject);
+            });
+        });
     </script>
 
     <script>
