@@ -148,14 +148,10 @@
                     const specialCharacters = "!@#$%^&*-_/=?+.";
                     let characters = "";
 
-                    if (this.options.uppercase)
-                        characters += uppercaseCharacters;
-                    if (this.options.lowercase)
-                        characters += lowercaseCharacters;
-                    if (this.options.numbers)
-                        characters += numberCharacters;
-                    if (this.options.symbols)
-                        characters += specialCharacters;
+                    if (this.options.uppercase) characters += uppercaseCharacters;
+                    if (this.options.lowercase) characters += lowercaseCharacters;
+                    if (this.options.numbers) characters += numberCharacters;
+                    if (this.options.symbols) characters += specialCharacters;
 
                     if (!characters.length) {
                         this.password = "";
@@ -165,7 +161,6 @@
                     const result = [];
 
                     const totalTypes = Object.values(this.options).filter(Boolean).length;
-
                     let minCountPerType = Math.min(3, Math.floor(this.length / totalTypes));
                     minCountPerType = Math.max(1, minCountPerType);
 
@@ -173,57 +168,46 @@
 
                     if (this.options.uppercase) {
                         for (let i = 0; i < minCountPerType; i++) {
-                            result.push(
-                                uppercaseCharacters.charAt(
-                                    this.getRandomInt(uppercaseCharacters.length)
-                                )
-                            );
+                            result.push(uppercaseCharacters.charAt(this.getRandomInt(uppercaseCharacters.length)));
                             totalMinCharacters++;
                         }
                     }
 
                     if (this.options.lowercase) {
                         for (let i = 0; i < minCountPerType; i++) {
-                            result.push(
-                                lowercaseCharacters.charAt(
-                                    this.getRandomInt(lowercaseCharacters.length)
-                                )
-                            );
+                            result.push(lowercaseCharacters.charAt(this.getRandomInt(lowercaseCharacters.length)));
                             totalMinCharacters++;
                         }
                     }
 
                     if (this.options.numbers) {
                         for (let i = 0; i < minCountPerType; i++) {
-                            result.push(
-                                numberCharacters.charAt(
-                                    this.getRandomInt(numberCharacters.length)
-                                )
-                            );
+                            result.push(numberCharacters.charAt(this.getRandomInt(numberCharacters.length)));
                             totalMinCharacters++;
                         }
                     }
 
                     if (this.options.symbols) {
                         for (let i = 0; i < minCountPerType; i++) {
-                            result.push(
-                                specialCharacters.charAt(
-                                    this.getRandomInt(specialCharacters.length)
-                                )
-                            );
+                            result.push(specialCharacters.charAt(this.getRandomInt(specialCharacters.length)));
                             totalMinCharacters++;
                         }
                     }
 
                     for (let i = totalMinCharacters; i < this.length; i++) {
-                        result.push(
-                            characters.charAt(
-                                this.getRandomInt(characters.length)
-                            )
-                        );
+                        result.push(characters.charAt(this.getRandomInt(characters.length)));
                     }
 
                     this.shuffleArray(result);
+
+                    const alphabetCharacters = uppercaseCharacters + lowercaseCharacters;
+                    if (!alphabetCharacters.includes(result[0])) {
+                        result[0] = alphabetCharacters.charAt(this.getRandomInt(alphabetCharacters.length));
+                    }
+
+                    if (!alphabetCharacters.includes(result[result.length - 1])) {
+                        result[result.length - 1] = alphabetCharacters.charAt(this.getRandomInt(alphabetCharacters.length));
+                    }
 
                     this.password = result.join('');
 
