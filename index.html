@@ -168,27 +168,41 @@
                 </div>
             </button>
 
-            <div class="relative flex items-center justify-center">
-                <div 
-                    @click="copyToClipboard()"
-                    @keyup.enter="copyToClipboard()"
-                    x-ref="password" 
-                    x-text="password"
-                    class="source-code-pro w-full rounded border-2 border-gray-300/80 bg-gray-50 px-3 py-2 text-lg md:text-2xl lg:text-4xl font-medium text-gray-800 shadow-sm text-center h-24 md:h-32 lg:h-40 flex items-center justify-center cursor-pointer select-all
-                    transition-all duration-300 ease-in-out
-                    hover:scale-[1.01] hover:shadow-lg hover:border-indigo-400/70 hover:bg-white
-                    active:scale-[0.99] active:bg-gray-100/80 active:border-indigo-500/60
-                    focus:outline-none focus:border-indigo-400
-                    motion-safe:transform"
-                    role="textbox"
-                    aria-readonly="true"
-                    aria-label="Generated password display"
-                    aria-live="polite"
-                    tabindex="0"
-                    x-transition:enter="transition ease-out duration-300"
-                    x-transition:enter-start="opacity-0 scale-95"
-                    x-transition:enter-end="opacity-100 scale-100"
-                ></div>
+            <div class="space-y-4">
+                <div class="relative flex items-center justify-center">
+                    <div @click="copyToClipboard()" @keyup.enter="copyToClipboard()" x-ref="password"
+                        class="source-code-pro flex h-24 w-full cursor-pointer select-none items-center justify-center gap-1 rounded border-2 border-slate-300/80 bg-slate-100 px-3 py-2 text-center text-lg font-medium shadow-sm transition-colors duration-200 hover:bg-slate-200 active:bg-slate-300 md:h-32 md:text-2xl lg:h-40 lg:text-4xl"
+                        role="textbox" aria-readonly="true" aria-label="Generated password display" aria-live="polite"
+                        tabindex="0">
+                        <template x-for="char in getFormattedPassword()" :key="char.id">
+                            <span :class="char.style" x-text="char.char"></span>
+                        </template>
+                    </div>
+                </div>
+
+                <div class="space-y-1 text-sm text-slate-600">
+                    <h3 class="font-medium">Password Composition:</h3>
+                    <div class="flex flex-wrap gap-4" aria-label="Password character type legend">
+                        <template x-for="(info, type) in characterTypes" :key="type">
+                            <div class="flex items-center gap-1">
+                                <span :class="info.color" class="font-mono font-medium" x-text="info.indicator"></span>
+                                <span x-text="info.label"></span>
+                                <span class="text-slate-500"
+                                    x-text="'(' + (getPasswordStats()[type] || 0) + ')'"></span>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <div class="sr-only" role="note" aria-label="Password character type information">
+                    <div>Password contains:</div>
+                    <template x-for="(info, type) in characterTypes" :key="type">
+                        <div>
+                            <span x-text="(getPasswordStats()[type] || 0)"></span>
+                            <span x-text="info.label"></span>
+                        </div>
+                    </template>
+                </div>
             </div>
 
             <div class="flex gap-2">
@@ -481,6 +495,60 @@
                         symbols: "Symbols",
                     };
                     this.showMessage(option, `${optionNames[option]}: ${status}`);
+                },
+
+                characterTypes: {
+                    uppercase: {
+                        color: "text-gray-800",
+                        label: "uppercase letters",
+                        indicator: "A-Z",
+                    },
+                    lowercase: {
+                        color: "text-gray-600",
+                        label: "lowercase letters",
+                        indicator: "a-z",
+                    },
+                    numbers: {
+                        color: "text-pink-600",
+                        label: "numbers",
+                        indicator: "0-9",
+                    },
+                    special: {
+                        color: "text-blue-600",
+                        label: "special characters",
+                        indicator: "!@#",
+                    },
+                },
+
+                getCharacterStyle(char) {
+                    if (char.match(/[A-Z]/)) return this.characterTypes.uppercase.color;
+                    if (char.match(/[a-z]/)) return this.characterTypes.lowercase.color;
+                    if (char.match(/[0-9]/)) return this.characterTypes.numbers.color;
+                    return this.characterTypes.special.color;
+                },
+
+                getCharacterType(char) {
+                    if (char.match(/[A-Z]/)) return "uppercase";
+                    if (char.match(/[a-z]/)) return "lowercase";
+                    if (char.match(/[0-9]/)) return "numbers";
+                    return "special";
+                },
+
+                getFormattedPassword() {
+                    return this.password.split("").map((char, index) => ({
+                        char,
+                        style: this.getCharacterStyle(char),
+                        type: this.getCharacterType(char),
+                        id: `char-${index}`,
+                    }));
+                },
+
+                getPasswordStats() {
+                    return this.password.split("").reduce((stats, char) => {
+                        const type = this.getCharacterType(char);
+                        stats[type] = (stats[type] || 0) + 1;
+                        return stats;
+                    }, {});
                 },
 
                 evaluate(password) {
