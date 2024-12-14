@@ -71,7 +71,7 @@
             </div>
         </div>
 
-        <div class="mt-3 grid grid-cols-2 gap-x-4 gap-y-4">
+        <div class="mt-3 grid grid-cols-2 gap-x-4 gap-y-3">
             <template x-for="(label, type) in {
         uppercase: 'Include uppercase letters (A-Z)',
         lowercase: 'Include lowercase letters (a-z)',
@@ -240,16 +240,19 @@
 
         <div x-show="password" class="mt-4 space-y-2 rounded border-2 p-4 transition-colors duration-200 md:mt-6"
             :class="getEvaluationClass()">
-            <h2 class="text-xl font-semibold text-gray-800">Password Evaluation</h2>
-            <div class="space-y-2">
+            <h2 class="text-xl font-semibold text-gray-700 md:text-2xl">
+                Password Evaluation
+            </h2>
+            <div class="space-y-2 font-semibold">
                 <div class="flex items-center gap-2">
-                    <span class="text-base text-gray-700">Strength Score:</span>
+                    <span class="text-base text-gray-500">Strength Score:</span>
                     <span x-cloak :class="passwordScoreClass()" x-text="passwordScoreText()"
                         class="font-semibold"></span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="text-base text-gray-700">Estimated Crack Time:</span>
-                    <span x-text="crackTime" class="font-semibold text-gray-900"></span>
+                    <span class="text-base text-gray-500">Estimated Crack Time:</span>
+                    <span x-text="crackTime" class="rounded border-2 px-2 py-1 font-semibold uppercase text-gray-700"
+                        :class="getEvaluationClass()"></span>
                 </div>
             </div>
         </div>
