@@ -49,58 +49,161 @@
             Generate robust, random passwords to fortify your online security. Don't
             be a victim of cyber attacks.
         </p>
-        <label for="length" class="block text-base font-medium text-gray-600">Password Length</label>
-        <input x-model="length" @input="updateLength()" type="number" min="6" id="length" max="100"
-            class="mt-1 block w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-base font-medium text-gray-700 shadow-sm focus:border-gray-400 focus:outline-none focus:ring-gray-400 md:text-lg" />
-        <div class="mt-3 grid grid-cols-2 gap-3">
-            <label>
-                <input x-model="options.uppercase" @change="updateOptions('uppercase')" type="checkbox"
-                    class="form-checkbox" />
-                <span class="ml-2 text-lg">Include uppercase letters (A-Z)</span>
-            </label>
-            <label>
-                <input x-model="options.lowercase" @change="updateOptions('lowercase')" type="checkbox"
-                    class="form-checkbox" />
-                <span class="ml-2 text-lg">Include lowercase letters (a-z)</span>
-            </label>
-            <label>
-                <input x-model="options.numbers" @change="updateOptions('numbers')" type="checkbox"
-                    class="form-checkbox" />
-                <span class="ml-2 text-lg">Include numbers (0-9)</span>
-            </label>
-            <label>
-                <input x-model="options.symbols" @change="updateOptions('symbols')" type="checkbox"
-                    class="form-checkbox" />
-                <span class="ml-2 text-lg">Include symbols (!@#$%^&*-_/=?+.)</span>
-            </label>
+
+        <div class="relative">
+            <label for="length" class="block text-base font-medium text-gray-600">Password Length</label>
+            <input x-model="length" @input="updateLength()" type="number" min="6" id="length" max="100"
+                class="mt-1 block w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-base font-medium text-gray-700 shadow-sm focus:border-gray-400 focus:outline-none focus:ring-gray-400 md:text-lg" />
+
+            <div x-show="messages.length" x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 transform -translate-y-2"
+                x-transition:enter-end="opacity-100 transform translate-y-0"
+                x-transition:leave="transition ease-in duration-150"
+                x-transition:leave-start="opacity-100 transform translate-y-0"
+                x-transition:leave-end="opacity-0 transform -translate-y-2"
+                class="absolute -top-12 left-0 z-10 inline-block rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm dark:bg-gray-700">
+                <div class="relative">
+                    <p x-text="messages.length" class="text-sm"></p>
+                    <div
+                        class="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 transform border-b border-r border-gray-200 bg-white">
+                    </div>
+                </div>
+            </div>
         </div>
-        <button @click="generate()"
-            class="mt-3 w-full rounded border border-transparent bg-green-600 px-6 py-1 text-base font-semibold text-white shadow-sm hover:bg-green-700">
-            Generate Password
-        </button>
-        <textarea
-            @click="$clipboard(password).then(() => { copySuccess = true; setTimeout(() => { copySuccess = false }, 3000); }).catch(() => { copyFail = true; setTimeout(() => { copyFail = false }, 3000); })"
-            x-ref="password" x-text="password" readonly
-            class="source-code-pro mt-3 w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-lg font-medium text-gray-700 shadow-sm focus:border-gray-400 focus:outline-none focus:ring-gray-400 md:text-xl"></textarea>
 
-        <button
-            @click="$clipboard(password).then(() => { copySuccess = true; setTimeout(() => { copySuccess = false }, 3000); }).catch(() => { copyFail = true; setTimeout(() => { copyFail = false }, 3000); })"
-            class="relative inline-flex items-center rounded border bg-indigo-500 px-3 py-1 text-sm font-semibold text-white hover:bg-indigo-600">
-            Copy to Clipboard
-        </button>
-        <button @click="reset()"
-            class="relative -ml-px inline-flex items-center rounded border bg-gray-300 px-3 py-1 text-sm font-semibold text-gray-700 hover:bg-gray-400">
-            Reset to Default
-        </button>
+        <div class="mt-3 grid grid-cols-2 gap-x-4 gap-y-4">
+            <template x-for="(label, type) in {
+        uppercase: 'Include uppercase letters (A-Z)',
+        lowercase: 'Include lowercase letters (a-z)',
+        numbers: 'Include numbers (0-9)',
+        symbols: 'Include symbols (!@#$%^&*-_/=?+.)'
+    }" :key="type">
+                <div class="relative">
+                    <label class="flex items-start">
+                        <input x-model="options[type]" @change="updateOptions(type)" type="checkbox"
+                            class="form-checkbox mt-1" />
+                        <span class="ml-2 text-lg" x-text="label"></span>
+                    </label>
 
-        <p x-cloak x-show="copySuccess" class="mt-3 text-base text-green-600">
-            Copied to clipboard!
-        </p>
-        <p x-cloak x-show="copyFail" class="mt-3 text-base text-red-600">
-            Failed to copy. Please manually select and copy.
-        </p>
+                    <div x-show="messages[type]" x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 transform -translate-y-2"
+                        x-transition:enter-end="opacity-100 transform translate-y-0"
+                        x-transition:leave="transition ease-in duration-150"
+                        x-transition:leave-start="opacity-100 transform translate-y-0"
+                        x-transition:leave-end="opacity-0 transform -translate-y-2"
+                        class="absolute -top-12 left-8 z-10 inline-block rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm dark:bg-gray-700">
+                        <div class="relative">
+                            <p x-text="messages[type]" class="text-sm"></p>
+                            <div
+                                class="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 transform border-b border-r border-gray-200 bg-white">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
 
-        <p x-show="message" x-text="message" class="mt-3 text-lg text-gray-600 font-semibold"></p>
+        <div class="mb-4 mt-6 grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div class="relative">
+                <label for="excludedChars" class="block text-base font-medium text-gray-600">Exclude Characters</label>
+                <div class="relative mt-1">
+                    <input x-model="excludedChars" @input="validateExcludedChars($event.target.value)" type="text"
+                        id="excludedChars" placeholder="Exclude (e.g., 0OIlx)"
+                        class="source-code-pro block w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-base font-medium text-gray-700 shadow-sm focus:border-gray-400 focus:outline-none focus:ring-gray-400 md:text-lg" />
+                    <button x-show="excludedChars.length > 0" @click="clearExcludedChars()"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div x-show="messages.exclude" x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 transform -translate-y-2"
+                    x-transition:enter-end="opacity-100 transform translate-y-0"
+                    x-transition:leave="transition ease-in duration-150"
+                    x-transition:leave-start="opacity-100 transform translate-y-0"
+                    x-transition:leave-end="opacity-0 transform -translate-y-2"
+                    class="absolute -top-12 left-0 z-10 inline-block rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm dark:bg-gray-700">
+                    <div class="relative">
+                        <p x-text="messages.exclude" class="text-sm"></p>
+                        <div
+                            class="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 transform border-b border-r border-gray-200 bg-white">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative mt-6">
+                <label class="flex items-start">
+                    <input type="checkbox" :checked="caseSensitiveExclusion" @change="toggleCaseSensitivity()"
+                        class="form-checkbox mt-1" />
+                    <span class="ml-2 text-lg">Exclude both cases (a/A)</span>
+                </label>
+                <div x-show="messages.case" x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 transform -translate-y-2"
+                    x-transition:enter-end="opacity-100 transform translate-y-0"
+                    class="absolute -top-12 left-8 z-10 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm">
+                    <span x-text="messages.case"></span>
+                    <div
+                        class="absolute bottom-[-8px] left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 border-b border-r border-gray-200 bg-white">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-3">
+            <button @click="generate()"
+                class="group relative w-full rounded border border-transparent bg-green-600 px-6 py-2 text-base font-semibold text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                <span>Generate Password</span>
+                <div x-show="messages.generate" x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 transform -translate-y-2"
+                    x-transition:enter-end="opacity-100 transform translate-y-0"
+                    class="absolute -top-12 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm">
+                    <span x-text="messages.generate"></span>
+                    <div
+                        class="absolute bottom-[-8px] left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 border-b border-r border-gray-200 bg-white">
+                    </div>
+                </div>
+            </button>
+
+            <div class="relative">
+                <textarea x-ref="password" x-text="password" readonly
+                    class="source-code-pro w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-lg font-medium text-gray-700 shadow-sm focus:border-gray-400 focus:outline-none focus:ring-gray-400 md:text-xl">
+          </textarea>
+            </div>
+
+            <div class="flex gap-2">
+                <button @click="copyToClipboard()"
+                    class="group relative flex-1 rounded border bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    <span>Copy to Clipboard</span>
+                    <div x-show="messages.copy" x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 transform -translate-y-2"
+                        x-transition:enter-end="opacity-100 transform translate-y-0"
+                        class="absolute -top-12 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm">
+                        <span x-text="messages.copy"></span>
+                        <div
+                            class="absolute bottom-[-8px] left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 border-b border-r border-gray-200 bg-white">
+                        </div>
+                    </div>
+                </button>
+
+                <button @click="reset()"
+                    class="group relative flex-1 rounded border bg-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2">
+                    <span>Reset to Default</span>
+                    <div x-show="messages.reset" x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 transform -translate-y-2"
+                        x-transition:enter-end="opacity-100 transform translate-y-0"
+                        class="absolute -top-12 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm">
+                        <span x-text="messages.reset"></span>
+                        <div
+                            class="absolute bottom-[-8px] left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 border-b border-r border-gray-200 bg-white">
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </div>
 
         <div x-show="password" class="mt-4 md:mt-8">
             <h2 class="text-xl font-semibold text-gray-700">Evaluation</h2>
@@ -134,179 +237,268 @@
                 crackTime: "",
                 copySuccess: false,
                 copyFail: false,
-                message: "",
+                messages: {},
+                excludedChars: "",
+                caseSensitiveExclusion: false,
                 options: {
                     uppercase: true,
                     lowercase: true,
                     numbers: true,
                     symbols: true,
                 },
-                generate() {
-                    const uppercaseCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-                    const lowercaseCharacters = "abcdefghijklmnopqrstuvwxyz";
-                    const numberCharacters = "0123456789";
-                    const specialCharacters = "!@#$%^&*-_/=?+.";
-                    let characters = "";
 
-                    if (this.options.uppercase) characters += uppercaseCharacters;
-                    if (this.options.lowercase) characters += lowercaseCharacters;
-                    if (this.options.numbers) characters += numberCharacters;
-                    if (this.options.symbols) characters += specialCharacters;
-
-                    if (!characters.length) {
-                        this.password = "";
-                        return;
-                    }
-
-                    const result = [];
-
-                    const totalTypes = Object.values(this.options).filter(Boolean).length;
-                    let minCountPerType = Math.min(3, Math.floor(this.length / totalTypes));
-                    minCountPerType = Math.max(1, minCountPerType);
-
-                    let totalMinCharacters = 0;
-
-                    if (this.options.uppercase) {
-                        for (let i = 0; i < minCountPerType; i++) {
-                            result.push(uppercaseCharacters.charAt(this.getRandomInt(uppercaseCharacters.length)));
-                            totalMinCharacters++;
-                        }
-                    }
-
-                    if (this.options.lowercase) {
-                        for (let i = 0; i < minCountPerType; i++) {
-                            result.push(lowercaseCharacters.charAt(this.getRandomInt(lowercaseCharacters.length)));
-                            totalMinCharacters++;
-                        }
-                    }
-
-                    if (this.options.numbers) {
-                        for (let i = 0; i < minCountPerType; i++) {
-                            result.push(numberCharacters.charAt(this.getRandomInt(numberCharacters.length)));
-                            totalMinCharacters++;
-                        }
-                    }
-
-                    if (this.options.symbols) {
-                        for (let i = 0; i < minCountPerType; i++) {
-                            result.push(specialCharacters.charAt(this.getRandomInt(specialCharacters.length)));
-                            totalMinCharacters++;
-                        }
-                    }
-
-                    for (let i = totalMinCharacters; i < this.length; i++) {
-                        result.push(characters.charAt(this.getRandomInt(characters.length)));
-                    }
-
-                    this.shuffleArray(result);
-
-                    const alphabetCharacters = uppercaseCharacters + lowercaseCharacters;
-                    if (!alphabetCharacters.includes(result[0])) {
-                        result[0] = alphabetCharacters.charAt(this.getRandomInt(alphabetCharacters.length));
-                    }
-
-                    if (!alphabetCharacters.includes(result[result.length - 1])) {
-                        result[result.length - 1] = alphabetCharacters.charAt(this.getRandomInt(alphabetCharacters.length));
-                    }
-
-                    this.password = result.join('');
-
-                    this.evaluate(this.password);
-
-                    this.message = "Password generated successfully!";
-                    setTimeout(() => {
-                        this.message = "";
-                    }, 3000);
+                init() {
+                    this.caseSensitiveExclusion = false;
+                    this.generate();
                 },
+
+                showMessage(key, text, duration = 2000) {
+                    const newMessages = { ...this.messages };
+                    newMessages[key] = text;
+                    this.messages = newMessages;
+
+                    setTimeout(() => {
+                        const updatedMessages = { ...this.messages };
+                        delete updatedMessages[key];
+                        this.messages = updatedMessages;
+                    }, duration);
+                },
+
+                copyToClipboard() {
+                    const password = this.password;
+                    navigator.clipboard
+                        .writeText(password)
+                        .then(() => {
+                            this.showMessage("copy", "Password copied to clipboard!");
+                        })
+                        .catch(() => {
+                            this.showMessage("copy", "Failed to copy. Please try again.");
+                        });
+                },
+
+                generate() {
+                    try {
+                        const uppercaseCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                        const lowercaseCharacters = "abcdefghijklmnopqrstuvwxyz";
+                        const numberCharacters = "0123456789";
+                        const specialCharacters = "!@#$%^&*-_/=?+.";
+
+                        let characters = "";
+                        const excludeSet = new Set();
+
+                        [...this.excludedChars].forEach((char) => {
+                            excludeSet.add(char);
+                            if (
+                                this.caseSensitiveExclusion &&
+                                char.toLowerCase() !== char.toUpperCase()
+                            ) {
+                                excludeSet.add(char.toLowerCase());
+                                excludeSet.add(char.toUpperCase());
+                            }
+                        });
+
+                        if (this.options.uppercase)
+                            characters += [...uppercaseCharacters]
+                                .filter((char) => !excludeSet.has(char))
+                                .join("");
+                        if (this.options.lowercase)
+                            characters += [...lowercaseCharacters]
+                                .filter((char) => !excludeSet.has(char))
+                                .join("");
+                        if (this.options.numbers)
+                            characters += [...numberCharacters]
+                                .filter((char) => !excludeSet.has(char))
+                                .join("");
+                        if (this.options.symbols)
+                            characters += [...specialCharacters]
+                                .filter((char) => !excludeSet.has(char))
+                                .join("");
+
+                        if (!characters.length) {
+                            this.password = "";
+                            this.showMessage(
+                                "generate",
+                                "Please select at least one character type and ensure not all characters are excluded.",
+                            );
+                            return;
+                        }
+
+                        const result = [];
+                        const totalTypes = Object.values(this.options).filter(
+                            Boolean,
+                        ).length;
+                        let minCountPerType = Math.min(
+                            3,
+                            Math.floor(this.length / totalTypes),
+                        );
+                        minCountPerType = Math.max(1, minCountPerType);
+                        let totalMinCharacters = 0;
+
+                        const getFilteredChars = (sourceChars) =>
+                            [...sourceChars].filter((char) => !excludeSet.has(char));
+
+                        const processCharacterType = (chars, type) => {
+                            if (this.options[type]) {
+                                const available = getFilteredChars(chars);
+                                if (available.length) {
+                                    for (let i = 0; i < minCountPerType; i++) {
+                                        result.push(
+                                            available[this.getRandomInt(available.length)],
+                                        );
+                                        totalMinCharacters++;
+                                    }
+                                }
+                            }
+                        };
+
+                        processCharacterType(uppercaseCharacters, "uppercase");
+                        processCharacterType(lowercaseCharacters, "lowercase");
+                        processCharacterType(numberCharacters, "numbers");
+                        processCharacterType(specialCharacters, "symbols");
+
+                        const charArray = [...characters];
+                        for (let i = totalMinCharacters; i < this.length; i++) {
+                            result.push(charArray[this.getRandomInt(charArray.length)]);
+                        }
+
+                        this.shuffleArray(result);
+
+                        const alphabetCharacters = getFilteredChars(
+                            uppercaseCharacters + lowercaseCharacters,
+                        );
+                        if (alphabetCharacters.length > 0) {
+                            if (!/[a-zA-Z]/.test(result[0])) {
+                                result[0] =
+                                    alphabetCharacters[
+                                    this.getRandomInt(alphabetCharacters.length)
+                                    ];
+                            }
+                            if (!/[a-zA-Z]/.test(result[result.length - 1])) {
+                                result[result.length - 1] =
+                                    alphabetCharacters[
+                                    this.getRandomInt(alphabetCharacters.length)
+                                    ];
+                            }
+                        }
+
+                        this.password = result.join("");
+                        this.evaluate(this.password);
+                        this.showMessage(
+                            "generate",
+                            "New password generated successfully",
+                        );
+                    } catch (error) {
+                        console.error("Generation error:", error);
+                        this.showMessage("generate", "Failed to generate password");
+                    }
+                },
+
                 getRandomInt(max) {
                     const array = new Uint32Array(1);
                     window.crypto.getRandomValues(array);
                     return array[0] % max;
                 },
+
                 shuffleArray(array) {
                     for (let i = array.length - 1; i > 0; i--) {
                         const j = this.getRandomInt(i + 1);
                         [array[i], array[j]] = [array[j], array[i]];
                     }
                 },
-                passwordScoreText() {
-                    switch (this.score) {
-                        case 0:
-                            return "too guessable";
-                        case 1:
-                            return "very guessable";
-                        case 2:
-                            return "somewhat guessable";
-                        case 3:
-                            return "safely unguessable";
-                        case 4:
-                            return "very unguessable";
-                        default:
-                            return "";
+
+                validateExcludedChars(value) {
+                    const sanitized = [...new Set(value.replace(/\s+/g, ""))].join("");
+                    if (sanitized !== value) {
+                        this.excludedChars = sanitized;
                     }
+                    this.generate();
                 },
-                passwordScoreClass() {
-                    switch (this.score) {
-                        case 0:
-                            return "text-red-600";
-                        case 1:
-                            return "text-orange-600";
-                        case 2:
-                            return "text-yellow-600";
-                        case 3:
-                            return "text-green-600";
-                        case 4:
-                            return "text-blue-600";
-                        default:
-                            return "";
-                    }
+
+                clearExcludedChars() {
+                    this.excludedChars = "";
+                    this.generate();
+                    this.showMessage("exclude", "Characters cleared");
                 },
-                evaluate(password) {
-                    const evaluation = zxcvbn(password);
-                    this.score = evaluation.score;
-                    this.crackTime =
-                        evaluation.crack_times_display.offline_slow_hashing_1e4_per_second;
+
+                toggleCaseSensitivity() {
+                    this.caseSensitiveExclusion = !this.caseSensitiveExclusion;
+
+                    this.$nextTick(() => {
+                        this.generate();
+                        const status = this.caseSensitiveExclusion
+                            ? "enabled"
+                            : "disabled";
+                        this.showMessage("case", `Case-sensitive exclusion ${status}`);
+                    });
                 },
+
                 reset() {
                     this.length = 18;
+                    this.excludedChars = "";
+                    this.caseSensitiveExclusion = false;
                     this.options = {
                         uppercase: true,
                         lowercase: true,
                         numbers: true,
                         symbols: true,
                     };
-                    this.generate();
-                    this.message = "Reset to default settings.";
-                    setTimeout(() => {
-                        this.message = "";
-                    }, 3000);
+
+                    this.$nextTick(() => {
+                        this.generate();
+                        this.showMessage("reset", "Settings reset to default");
+                    });
                 },
+
                 updateLength() {
                     this.generate();
-                    this.message = `Password length updated to ${this.length}.`;
-                    setTimeout(() => {
-                        this.message = "";
-                    }, 3000);
+                    this.showMessage("length", `Length: ${this.length} characters`);
                 },
+
                 updateOptions(option) {
                     this.generate();
-                    const status = this.options[option] ? 'enabled' : 'disabled';
+                    const status = this.options[option] ? "enabled" : "disabled";
                     const optionNames = {
-                        uppercase: 'Uppercase letters',
-                        lowercase: 'Lowercase letters',
-                        numbers: 'Numbers',
-                        symbols: 'Symbols',
+                        uppercase: "Uppercase",
+                        lowercase: "Lowercase",
+                        numbers: "Numbers",
+                        symbols: "Symbols",
                     };
-                    this.message = `${optionNames[option]} ${status}.`;
-                    setTimeout(() => {
-                        this.message = "";
-                    }, 3000);
+                    this.showMessage(option, `${optionNames[option]}: ${status}`);
+                },
+
+                evaluate(password) {
+                    const evaluation = zxcvbn(password);
+                    this.score = evaluation.score;
+                    this.crackTime =
+                        evaluation.crack_times_display.offline_slow_hashing_1e4_per_second;
+                },
+
+                passwordScoreText() {
+                    const scores = {
+                        0: "too guessable",
+                        1: "very guessable",
+                        2: "somewhat guessable",
+                        3: "safely unguessable",
+                        4: "very unguessable",
+                    };
+                    return scores[this.score] || "";
+                },
+
+                passwordScoreClass() {
+                    const scores = {
+                        0: "text-red-600",
+                        1: "text-orange-600",
+                        2: "text-yellow-600",
+                        3: "text-green-600",
+                        4: "text-blue-600",
+                    };
+                    return scores[this.score] || "";
                 },
             };
         }
 
-        document.addEventListener('alpine:init', () => {
-            Alpine.magic('clipboard', () => subject => {
+        document.addEventListener("alpine:init", () => {
+            Alpine.magic("clipboard", () => (subject) => {
                 return navigator.clipboard.writeText(subject);
             });
         });
