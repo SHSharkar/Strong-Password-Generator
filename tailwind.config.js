@@ -3,9 +3,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Maven Pro", "sans-serif"],
-        display: ["Maven Pro", "sans-serif"],
-        body: ["Maven Pro", "sans-serif"],
+        sans: ["Delius", "sans-serif"],
+        display: ["Delius", "sans-serif"],
+        body: ["Delius", "sans-serif"],
       },
     },
   },
