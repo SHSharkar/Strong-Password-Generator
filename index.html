@@ -40,14 +40,18 @@
 
 <body class="p-6 font-sans">
     <div x-data="passwordGenerator()" x-init="generate()" class="mx-auto max-w-2xl">
-        <a href="/">
-            <h1 class="mb-4 text-xl font-semibold text-indigo-600 md:text-3xl">
-                Strong Password Generator
-            </h1>
-        </a>
-        <p class="mb-6 text-base font-medium text-gray-600 md:text-lg">
-            Generate robust, random passwords to fortify your online security. Don't
-            be a victim of cyber attacks.
+        <div class="mb-8">
+            <a href="/">
+                <h1
+                    class="mb-4 text-xl font-semibold text-blue-600 underline decoration-green-300 decoration-8 underline-offset-[16px] md:text-4xl">
+                    Strong Password Generator
+                </h1>
+            </a>
+        </div>
+
+        <p class="mb-6 text-base font-normal text-gray-600 md:text-lg">
+            Create secure and random passwords to strengthen your online security.
+            Don't Fall Victim into Cyber Attacks.
         </p>
 
         <div class="relative">
@@ -209,7 +213,7 @@
 
             <div class="flex gap-2">
                 <button @click="copyToClipboard()"
-                    class="group relative flex-1 rounded border bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    class="group relative flex-1 rounded border bg-blue-500 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                     <span>Copy to Clipboard</span>
                     <div x-show="messages.copy" x-transition:enter="transition ease-out duration-200"
                         x-transition:enter-start="opacity-0 transform -translate-y-2"
@@ -263,7 +267,7 @@
             &copy; {{current_year}}
             <a href="https://devops.com.bd" target="_blank" rel="noopener noreferrer" class="text-blue-600">DevOps</a>
             &
-            <a href="https://github.com/SHSharkar" target="_blank" rel="noopener noreferrer" class="text-indigo-600">Md.
+            <a href="https://github.com/SHSharkar" target="_blank" rel="noopener noreferrer" class="text-blue-600">Md.
                 Sazzad Hossain Sharkar</a>
         </p>
     </footer>
