@@ -234,8 +234,8 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="text-base text-gray-500">Estimated Crack Time:</span>
-                    <span x-text="crackTime" class="rounded border-2 px-2 py-1 font-semibold uppercase text-gray-700"
-                        :class="getEvaluationClass()"></span>
+                    <span x-text="crackTime"
+                        :class="[passwordScoreClass(), 'rounded border-2 px-2 py-1 font-semibold uppercase', getEvaluationClass()]"></span>
                 </div>
             </div>
         </div>
