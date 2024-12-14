@@ -46,12 +46,14 @@
             </h1>
         </a>
         <p class="mb-6 text-base font-medium text-gray-600 md:text-lg">
-            Generate robust, random passwords to fortify your online security. Don't
+            Generate robust, random passwords to fortify your online
+            security. Don't
             be a victim of cyber attacks.
         </p>
 
         <div class="relative">
-            <label for="length" class="block text-base font-medium text-gray-600">Password Length</label>
+            <label for="length" class="block text-base font-medium text-gray-600">Password
+                Length</label>
             <input x-model="length" @input="updateLength()" type="number" min="6" id="length" max="100"
                 class="mt-1 block w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-base font-medium text-gray-700 shadow-sm focus:border-gray-400 focus:outline-none focus:ring-gray-400 md:text-lg" />
 
@@ -105,7 +107,8 @@
 
         <div class="mb-4 mt-6 grid grid-cols-1 gap-3 md:grid-cols-2">
             <div class="relative">
-                <label for="excludedChars" class="block text-base font-medium text-gray-600">Exclude Characters</label>
+                <label for="excludedChars" class="block text-base font-medium text-gray-600">Exclude
+                    Characters</label>
                 <div class="relative mt-1">
                     <input x-model="excludedChars" @input="validateExcludedChars($event.target.value)" type="text"
                         id="excludedChars" placeholder="Exclude (e.g., 0OIlx)"
@@ -139,7 +142,8 @@
                 <label class="flex items-start">
                     <input type="checkbox" :checked="caseSensitiveExclusion" @change="toggleCaseSensitivity()"
                         class="form-checkbox mt-1" />
-                    <span class="ml-2 text-lg">Exclude both cases (a/A)</span>
+                    <span class="ml-2 text-lg">Exclude both cases
+                        (a/A)</span>
                 </label>
                 <div x-show="messages.case" x-transition:enter="transition ease-out duration-200"
                     x-transition:enter-start="opacity-0 transform -translate-y-2"
