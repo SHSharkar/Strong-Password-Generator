@@ -43,7 +43,7 @@
         <div class="mb-8">
             <a href="/">
                 <h1
-                    class="mb-4 text-xl font-semibold text-blue-600 underline decoration-green-300 decoration-8 underline-offset-[16px] md:text-4xl">
+                    class="mb-4 text-2xl font-semibold text-blue-600 underline decoration-green-300 decoration-8 underline-offset-[16px] md:text-4xl">
                     Strong Password Generator
                 </h1>
             </a>
@@ -139,7 +139,7 @@
                 </div>
             </div>
 
-            <div class="relative mt-6">
+            <div class="relative md:mt-10">
                 <label class="flex items-start">
                     <input type="checkbox" :checked="caseSensitiveExclusion" @change="toggleCaseSensitivity()"
                         class="form-checkbox mt-1" />
@@ -175,7 +175,7 @@
             <div class="space-y-4">
                 <div class="relative flex items-center justify-center">
                     <div @click="copyToClipboard()" @keyup.enter="copyToClipboard()" x-ref="password"
-                        class="source-code-pro relative flex min-h-[6rem] w-full cursor-pointer select-none items-center justify-center overflow-hidden rounded border-2 px-6 py-4 text-center text-lg font-medium shadow-sm transition-colors duration-200 md:min-h-[8rem] md:py-6 md:text-2xl lg:min-h-[10rem] lg:py-8 lg:text-4xl"
+                        class="source-code-pro relative flex min-h-[6rem] w-full cursor-pointer select-none items-center justify-center overflow-hidden rounded border-2 px-6 py-4 text-center text-2xl font-medium shadow-sm transition-colors duration-200 md:min-h-[8rem] md:py-6 md:text-2xl lg:min-h-[10rem] lg:py-8 lg:text-4xl"
                         :class="getPasswordDisplayClass()" role="textbox" aria-readonly="true"
                         aria-label="Generated password display" aria-live="polite" tabindex="0">
                         <div class="break-all px-2">
