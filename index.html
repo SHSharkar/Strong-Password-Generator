@@ -46,15 +46,13 @@
             </h1>
         </a>
         <p class="mb-6 text-base font-medium text-gray-600 md:text-lg">
-            Generate robust, random passwords to fortify your online
-            security. Don't
+            Generate robust, random passwords to fortify your online security. Don't
             be a victim of cyber attacks.
         </p>
 
         <div class="relative">
-            <label for="length" class="block text-base font-medium text-gray-600">Password
-                Length</label>
-            <input x-model="length" @input="updateLength()" type="number" min="6" id="length" max="100"
+            <label for="length" class="block text-base font-medium text-gray-600">Password Length</label>
+            <input x-model.number="length" @input="validateLength()" type="number" min="8" max="100" id="length"
                 class="mt-1 block w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-base font-medium text-gray-700 shadow-sm focus:border-gray-400 focus:outline-none focus:ring-gray-400 md:text-lg" />
 
             <div x-show="messages.length" x-transition:enter="transition ease-out duration-200"
@@ -107,8 +105,7 @@
 
         <div class="mb-4 mt-6 grid grid-cols-1 gap-3 md:grid-cols-2">
             <div class="relative">
-                <label for="excludedChars" class="block text-base font-medium text-gray-600">Exclude
-                    Characters</label>
+                <label for="excludedChars" class="block text-base font-medium text-gray-600">Exclude Characters</label>
                 <div class="relative mt-1">
                     <input x-model="excludedChars" @input="validateExcludedChars($event.target.value)" type="text"
                         id="excludedChars" placeholder="Exclude (e.g., 0OIlx)"
@@ -142,8 +139,7 @@
                 <label class="flex items-start">
                     <input type="checkbox" :checked="caseSensitiveExclusion" @change="toggleCaseSensitivity()"
                         class="form-checkbox mt-1" />
-                    <span class="ml-2 text-lg">Exclude both cases
-                        (a/A)</span>
+                    <span class="ml-2 text-lg">Exclude both cases (a/A)</span>
                 </label>
                 <div x-show="messages.case" x-transition:enter="transition ease-out duration-200"
                     x-transition:enter-start="opacity-0 transform -translate-y-2"
@@ -175,12 +171,14 @@
             <div class="space-y-4">
                 <div class="relative flex items-center justify-center">
                     <div @click="copyToClipboard()" @keyup.enter="copyToClipboard()" x-ref="password"
-                        class="source-code-pro flex h-24 w-full cursor-pointer select-none items-center justify-center gap-1 rounded border-2 border-slate-300/80 bg-slate-100 px-3 py-2 text-center text-lg font-medium shadow-sm transition-colors duration-200 hover:bg-slate-200 active:bg-slate-300 md:h-32 md:text-2xl lg:h-40 lg:text-4xl"
+                        class="source-code-pro relative flex min-h-[6rem] w-full cursor-pointer select-none items-center justify-center overflow-hidden rounded border-2 border-slate-300/80 bg-slate-100 px-6 py-4 text-center text-lg font-medium shadow-sm transition-colors duration-200 hover:bg-slate-200 active:bg-slate-300 md:min-h-[8rem] md:py-6 md:text-2xl lg:min-h-[10rem] lg:py-8 lg:text-4xl"
                         role="textbox" aria-readonly="true" aria-label="Generated password display" aria-live="polite"
                         tabindex="0">
-                        <template x-for="char in getFormattedPassword()" :key="char.id">
-                            <span :class="char.style" x-text="char.char"></span>
-                        </template>
+                        <div class="break-all px-2">
+                            <template x-for="char in getFormattedPassword()" :key="char.id">
+                                <span :class="char.style" x-text="char.char"></span>
+                            </template>
+                        </div>
                     </div>
                 </div>
 
@@ -240,16 +238,26 @@
             </div>
         </div>
 
-        <div x-show="password" class="mt-4 md:mt-8">
-            <h2 class="text-xl font-semibold text-gray-700">Evaluation</h2>
-            <p class="mt-2 text-base text-gray-600">
-                Your password's score:
-                <span x-cloak :class="passwordScoreClass()" x-text="passwordScoreText()"></span>
-            </p>
-            <p class="mt-2 text-base text-gray-600">
-                Time it would take for an attacker to crack this password:
-                <span x-text="crackTime" class="font-semibold"></span>
-            </p>
+        <div x-show="password" class="mt-4 space-y-2 rounded border-2 p-4 transition-colors duration-200 md:mt-6"
+            :class="{
+        'bg-red-50 border-red-200': score === 0,
+        'bg-orange-50 border-orange-200': score === 1,
+        'bg-yellow-50 border-yellow-200': score === 2,
+        'bg-green-50 border-green-200': score === 3,
+        'bg-blue-50 border-blue-200': score === 4
+    }">
+            <h2 class="text-xl font-semibold text-gray-800">Password Evaluation</h2>
+            <div class="space-y-2">
+                <div class="flex items-center gap-2">
+                    <span class="text-base text-gray-700">Strength Score:</span>
+                    <span x-cloak :class="passwordScoreClass()" x-text="passwordScoreText()"
+                        class="font-semibold"></span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-base text-gray-700">Estimated Crack Time:</span>
+                    <span x-text="crackTime" class="font-semibold text-gray-900"></span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -484,9 +492,34 @@
                     });
                 },
 
-                updateLength() {
+                validateLength() {
+                    const MIN_LENGTH = 8;
+                    const MAX_LENGTH = 100;
+
+                    let newLength = parseInt(this.length);
+
+                    if (isNaN(newLength) || newLength < MIN_LENGTH) {
+                        newLength = MIN_LENGTH;
+                        this.showMessage(
+                            "length",
+                            `Minimum password length is ${MIN_LENGTH} characters`,
+                            3000,
+                        );
+                    } else if (newLength > MAX_LENGTH) {
+                        newLength = MAX_LENGTH;
+                        this.showMessage(
+                            "length",
+                            `Maximum password length is ${MAX_LENGTH} characters`,
+                            3000,
+                        );
+                    }
+
+                    this.length = newLength;
                     this.generate();
-                    this.showMessage("length", `Length: ${this.length} characters`);
+                },
+
+                updateLength() {
+                    this.validateLength();
                 },
 
                 updateOptions(option) {
@@ -574,12 +607,13 @@
                 },
 
                 passwordScoreClass() {
+                    const baseClasses = "font-medium rounded-sm px-2 py-1";
                     const scores = {
-                        0: "text-red-600",
-                        1: "text-orange-600",
-                        2: "text-yellow-600",
-                        3: "text-green-600",
-                        4: "text-blue-600",
+                        0: `${baseClasses} text-red-700 bg-red-50`,
+                        1: `${baseClasses} text-orange-700 bg-orange-50`,
+                        2: `${baseClasses} text-yellow-700 bg-yellow-50`,
+                        3: `${baseClasses} text-green-700 bg-green-50`,
+                        4: `${baseClasses} text-blue-700 bg-blue-50`,
                     };
                     return scores[this.score] || "";
                 },
