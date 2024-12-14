@@ -65,13 +65,8 @@
                 x-transition:leave="transition ease-in duration-150"
                 x-transition:leave-start="opacity-100 transform translate-y-0"
                 x-transition:leave-end="opacity-0 transform -translate-y-2"
-                class="absolute -top-12 left-0 z-10 inline-block rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm dark:bg-gray-700">
-                <div class="relative">
-                    <p x-text="messages.length" class="text-sm"></p>
-                    <div
-                        class="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 transform border-b border-r border-gray-200 bg-white">
-                    </div>
-                </div>
+                class="absolute -top-12 left-0 z-10 inline-block rounded-lg border-2 border-gray-300 bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm">
+                <p x-text="messages.length"></p>
             </div>
         </div>
 
@@ -95,13 +90,8 @@
                         x-transition:leave="transition ease-in duration-150"
                         x-transition:leave-start="opacity-100 transform translate-y-0"
                         x-transition:leave-end="opacity-0 transform -translate-y-2"
-                        class="absolute -top-12 left-8 z-10 inline-block rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm dark:bg-gray-700">
-                        <div class="relative">
-                            <p x-text="messages[type]" class="text-sm"></p>
-                            <div
-                                class="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 transform border-b border-r border-gray-200 bg-white">
-                            </div>
-                        </div>
+                        class="absolute -top-12 left-8 z-10 inline-block rounded-lg border-2 border-gray-300 bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm">
+                        <p x-text="messages[type]"></p>
                     </div>
                 </div>
             </template>
@@ -149,11 +139,8 @@
                 <div x-show="messages.case" x-transition:enter="transition ease-out duration-200"
                     x-transition:enter-start="opacity-0 transform -translate-y-2"
                     x-transition:enter-end="opacity-100 transform translate-y-0"
-                    class="absolute -top-12 left-8 z-10 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm">
+                    class="absolute -top-12 left-8 z-10 whitespace-nowrap rounded-lg border-2 border-gray-300 bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm">
                     <span x-text="messages.case"></span>
-                    <div
-                        class="absolute bottom-[-8px] left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 border-b border-r border-gray-200 bg-white">
-                    </div>
                 </div>
             </div>
         </div>
@@ -165,11 +152,8 @@
                 <div x-show="messages.generate" x-transition:enter="transition ease-out duration-200"
                     x-transition:enter-start="opacity-0 transform -translate-y-2"
                     x-transition:enter-end="opacity-100 transform translate-y-0"
-                    class="absolute -top-12 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm">
+                    class="absolute -top-12 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-lg border-2 border-gray-300 bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm">
                     <span x-text="messages.generate"></span>
-                    <div
-                        class="absolute bottom-[-8px] left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 border-b border-r border-gray-200 bg-white">
-                    </div>
                 </div>
             </button>
 
@@ -219,11 +203,8 @@
                     <div x-show="messages.copy" x-transition:enter="transition ease-out duration-200"
                         x-transition:enter-start="opacity-0 transform -translate-y-2"
                         x-transition:enter-end="opacity-100 transform translate-y-0"
-                        class="absolute -top-12 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm">
+                        class="absolute -top-12 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-lg border-2 border-gray-300 bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm">
                         <span x-text="messages.copy"></span>
-                        <div
-                            class="absolute bottom-[-8px] left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 border-b border-r border-gray-200 bg-white">
-                        </div>
                     </div>
                 </button>
 
@@ -233,11 +214,8 @@
                     <div x-show="messages.reset" x-transition:enter="transition ease-out duration-200"
                         x-transition:enter-start="opacity-0 transform -translate-y-2"
                         x-transition:enter-end="opacity-100 transform translate-y-0"
-                        class="absolute -top-12 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm">
+                        class="absolute -top-12 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-lg border-2 border-gray-300 bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm">
                         <span x-text="messages.reset"></span>
-                        <div
-                            class="absolute bottom-[-8px] left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 border-b border-r border-gray-200 bg-white">
-                        </div>
                     </div>
                 </button>
             </div>
