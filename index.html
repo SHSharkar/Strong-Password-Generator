@@ -33,17 +33,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Maven+Pro:wght@400..900&family=Source+Code+Pro:wght@500&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Delius&family=Source+Code+Pro:wght@500&display=swap"
         rel="stylesheet" />
 </head>
 
-<body class="p-6 font-sans">
-    <div x-data="passwordGenerator()" x-init="generate()" class="mx-auto max-w-2xl">
-        <div class="mb-8">
+<body class="bg-gradient-to-t from-indigo-300 from-10% via-sky-300 via-30% to-emerald-300 to-90% p-6 font-sans">
+    <div x-data="passwordGenerator()" x-init="generate()"
+        class="mx-auto max-w-3xl rounded-lg border-2 bg-gradient-to-r from-gray-50 to-gray-100 p-6 md:p-8">
+        <div
+            class="mx-auto mb-4 flex items-center justify-center rounded-lg border-2 border-green-300 bg-gradient-to-r from-green-200 to-green-300 p-3 md:p-4">
             <a href="/">
-                <h1
-                    class="mb-4 text-2xl font-semibold text-blue-600 underline decoration-green-300 decoration-8 underline-offset-[16px] md:text-4xl">
+                <h1 class="text-2xl font-semibold text-green-600 md:text-3xl">
                     Strong Password Generator
                 </h1>
             </a>
@@ -55,9 +55,9 @@
         </p>
 
         <div class="relative">
-            <label for="length" class="block text-base font-medium text-gray-600">Password Length</label>
+            <label for="length" class="block text-base font-medium text-green-600">Password Length</label>
             <input x-model.number="length" @input="validateLength()" type="number" min="8" max="128" id="length"
-                class="mt-1 block w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-base font-medium text-gray-700 shadow-sm focus:border-gray-400 focus:outline-none focus:ring-gray-400 md:text-lg" />
+                class="source-code-pro mt-1 block w-full rounded border-2 border-green-300 bg-white px-3 py-2 text-base font-medium text-green-700 shadow-sm focus:border-green-400 focus:outline-none focus:ring-green-400 md:text-lg" />
 
             <div x-show="messages.length" x-transition:enter="transition ease-out duration-200"
                 x-transition:enter-start="opacity-0 transform -translate-y-2"
@@ -81,7 +81,7 @@
                     <label class="flex items-center">
                         <input x-model="options[type]" @change="updateOptions(type)" type="checkbox"
                             class="form-checkbox h-5 w-5 rounded border-gray-300 text-blue-600 transition duration-150 ease-in-out focus:ring-2 focus:ring-blue-500" />
-                        <span class="ml-3 text-base text-gray-700" x-text="label"></span>
+                        <span class="ml-3 text-sm text-gray-700" x-text="label"></span>
                     </label>
 
                     <div x-show="messages[type]" x-transition:enter="transition ease-out duration-200"
@@ -103,7 +103,7 @@
                 <div class="relative mt-1">
                     <input x-model="excludedChars" @input="validateExcludedChars($event.target.value)" type="text"
                         id="excludedChars" placeholder="Exclude (e.g., 0OIlx)"
-                        class="source-code-pro block w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-base font-medium text-gray-700 shadow-sm focus:border-gray-400 focus:outline-none focus:ring-gray-400 md:text-lg" />
+                        class="source-code-pro block w-full rounded border-2 border-gray-300 bg-white px-3 py-2 text-base font-medium text-gray-700 shadow-sm focus:border-gray-400 focus:outline-none focus:ring-gray-400" />
                     <button x-show="excludedChars.length > 0" @click="clearExcludedChars()"
                         class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -172,13 +172,13 @@
                 </div>
 
                 <div class="space-y-1 text-sm text-slate-600">
-                    <h3 class="font-medium">Password Composition:</h3>
+                    <h3 class="font-semibold">Password Composition:</h3>
                     <div class="flex flex-wrap gap-4" aria-label="Password character type legend">
                         <template x-for="(info, type) in characterTypes" :key="type">
                             <div class="flex items-center gap-1">
-                                <span :class="info.color" class="font-mono font-medium" x-text="info.indicator"></span>
-                                <span x-text="info.label"></span>
-                                <span class="text-slate-500"
+                                <span :class="info.color" class="font-xs font-semibold" x-text="info.indicator"></span>
+                                <span class="font-xs" x-text="info.label"></span>
+                                <span class="font-xs font-semibold text-slate-500"
                                     x-text="'(' + (getPasswordStats()[type] || 0) + ')'"></span>
                             </div>
                         </template>
@@ -226,14 +226,14 @@
             <h2 class="text-xl font-semibold text-gray-700 md:text-2xl">
                 Password Evaluation
             </h2>
-            <div class="space-y-2 font-semibold">
+            <div class="grid grid-cols-1 gap-4 font-semibold md:grid-cols-2">
                 <div class="flex items-center gap-2">
-                    <span class="text-base text-gray-500">Strength Score:</span>
+                    <span class="text-base font-normal text-gray-600">Strength Score:</span>
                     <span x-cloak :class="passwordScoreClass()" x-text="passwordScoreText()"
                         class="font-semibold"></span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="text-base text-gray-500">Estimated Crack Time:</span>
+                    <span class="text-base font-normal text-gray-600">Estimated Crack Time:</span>
                     <span x-text="crackTime"
                         :class="[passwordScoreClass(), 'rounded border-2 px-2 py-1 font-semibold uppercase', getEvaluationClass()]"></span>
                 </div>
@@ -248,13 +248,13 @@
             &
             <a href="https://github.com/SHSharkar" target="_blank" rel="noopener noreferrer" class="text-blue-600">Md.
                 Sazzad Hossain Sharkar</a>
-            <span class="ml-2 inline-flex items-center gap-1 text-sm text-gray-500" title="Application Version">
+            <span class="ml-2 inline-flex items-center gap-1 text-sm" title="Application Version">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="h-4 w-4">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
                 </svg>
-                v20241214.1
+                v20241215.1
             </span>
         </p>
     </footer>
