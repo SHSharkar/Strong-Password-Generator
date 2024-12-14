@@ -171,9 +171,9 @@
             <div class="space-y-4">
                 <div class="relative flex items-center justify-center">
                     <div @click="copyToClipboard()" @keyup.enter="copyToClipboard()" x-ref="password"
-                        class="source-code-pro relative flex min-h-[6rem] w-full cursor-pointer select-none items-center justify-center overflow-hidden rounded border-2 border-slate-300/80 bg-slate-100 px-6 py-4 text-center text-lg font-medium shadow-sm transition-colors duration-200 hover:bg-slate-200 active:bg-slate-300 md:min-h-[8rem] md:py-6 md:text-2xl lg:min-h-[10rem] lg:py-8 lg:text-4xl"
-                        role="textbox" aria-readonly="true" aria-label="Generated password display" aria-live="polite"
-                        tabindex="0">
+                        class="source-code-pro relative flex min-h-[6rem] w-full cursor-pointer select-none items-center justify-center overflow-hidden rounded border-2 px-6 py-4 text-center text-lg font-medium shadow-sm transition-colors duration-200 md:min-h-[8rem] md:py-6 md:text-2xl lg:min-h-[10rem] lg:py-8 lg:text-4xl"
+                        :class="getPasswordDisplayClass()" role="textbox" aria-readonly="true"
+                        aria-label="Generated password display" aria-live="polite" tabindex="0">
                         <div class="break-all px-2">
                             <template x-for="char in getFormattedPassword()" :key="char.id">
                                 <span :class="char.style" x-text="char.char"></span>
@@ -239,13 +239,7 @@
         </div>
 
         <div x-show="password" class="mt-4 space-y-2 rounded border-2 p-4 transition-colors duration-200 md:mt-6"
-            :class="{
-        'bg-red-50 border-red-200': score === 0,
-        'bg-orange-50 border-orange-200': score === 1,
-        'bg-yellow-50 border-yellow-200': score === 2,
-        'bg-green-50 border-green-200': score === 3,
-        'bg-blue-50 border-blue-200': score === 4
-    }">
+            :class="getEvaluationClass()">
             <h2 class="text-xl font-semibold text-gray-800">Password Evaluation</h2>
             <div class="space-y-2">
                 <div class="flex items-center gap-2">
@@ -321,6 +315,13 @@
 
                 generate() {
                     try {
+                        const MIN_SECURE_LENGTH = 8;
+                        const actualLength = Math.max(
+                            MIN_SECURE_LENGTH,
+                            parseInt(this.length) || 0,
+                        );
+                        this.length = parseInt(this.length) || 0;
+
                         const uppercaseCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
                         const lowercaseCharacters = "abcdefghijklmnopqrstuvwxyz";
                         const numberCharacters = "0123456789";
@@ -372,7 +373,7 @@
                         ).length;
                         let minCountPerType = Math.min(
                             3,
-                            Math.floor(this.length / totalTypes),
+                            Math.floor(actualLength / totalTypes),
                         );
                         minCountPerType = Math.max(1, minCountPerType);
                         let totalMinCharacters = 0;
@@ -400,12 +401,11 @@
                         processCharacterType(specialCharacters, "symbols");
 
                         const charArray = [...characters];
-                        for (let i = totalMinCharacters; i < this.length; i++) {
+                        for (let i = totalMinCharacters; i < actualLength; i++) {
                             result.push(charArray[this.getRandomInt(charArray.length)]);
                         }
 
                         this.shuffleArray(result);
-
                         const alphabetCharacters = getFilteredChars(
                             uppercaseCharacters + lowercaseCharacters,
                         );
@@ -493,29 +493,57 @@
                 },
 
                 validateLength() {
-                    const MIN_LENGTH = 8;
                     const MAX_LENGTH = 128;
+                    let inputLength = parseInt(this.length);
 
-                    let newLength = parseInt(this.length);
-
-                    if (isNaN(newLength) || newLength < MIN_LENGTH) {
-                        newLength = MIN_LENGTH;
-                        this.showMessage(
-                            "length",
-                            `Minimum password length is ${MIN_LENGTH} characters`,
-                            3000,
-                        );
-                    } else if (newLength > MAX_LENGTH) {
-                        newLength = MAX_LENGTH;
-                        this.showMessage(
-                            "length",
-                            `Maximum password length is ${MAX_LENGTH} characters`,
-                            3000,
-                        );
+                    if (isNaN(inputLength)) {
+                        return;
                     }
 
-                    this.length = newLength;
+                    if (inputLength > MAX_LENGTH) {
+                        this.length = MAX_LENGTH;
+                        this.showMessage(
+                            "length",
+                            `Maximum length cannot exceed ${MAX_LENGTH} characters`,
+                            3000,
+                        );
+                    } else if (inputLength < 8) {
+                        this.length = inputLength;
+                        this.showMessage(
+                            "length",
+                            "For security, password will be generated with minimum 8 characters",
+                            3000,
+                        );
+                    } else {
+                        this.length = inputLength;
+                    }
+
                     this.generate();
+                },
+
+                getPasswordDisplayClass() {
+                    return (
+                        {
+                            0: "bg-red-50/90 border-red-300 hover:bg-red-100/80",
+                            1: "bg-pink-50/90 border-pink-300 hover:bg-pink-100/80",
+                            2: "bg-orange-50/90 border-orange-300 hover:bg-orange-100/80",
+                            3: "bg-lime-50/90 border-lime-300 hover:bg-lime-100/80",
+                            4: "bg-green-50/90 border-green-300 hover:bg-green-100/80",
+                        }[this.score] ||
+                        "bg-slate-50/90 border-slate-300 hover:bg-slate-100/80"
+                    );
+                },
+
+                getEvaluationClass() {
+                    return (
+                        {
+                            0: "bg-red-50 border-red-300",
+                            1: "bg-pink-50 border-pink-300",
+                            2: "bg-orange-50 border-orange-300",
+                            3: "bg-lime-50 border-lime-300",
+                            4: "bg-green-50 border-green-300",
+                        }[this.score] || "bg-slate-50 border-slate-300"
+                    );
                 },
 
                 updateLength() {
@@ -607,15 +635,15 @@
                 },
 
                 passwordScoreClass() {
-                    const baseClasses = "font-medium rounded-sm px-2 py-1";
-                    const scores = {
-                        0: `${baseClasses} text-red-700 bg-red-50`,
-                        1: `${baseClasses} text-orange-700 bg-orange-50`,
-                        2: `${baseClasses} text-yellow-700 bg-yellow-50`,
-                        3: `${baseClasses} text-green-700 bg-green-50`,
-                        4: `${baseClasses} text-blue-700 bg-blue-50`,
-                    };
-                    return scores[this.score] || "";
+                    return (
+                        {
+                            0: "text-red-900",
+                            1: "text-pink-900",
+                            2: "text-orange-900",
+                            3: "text-lime-900",
+                            4: "text-green-900",
+                        }[this.score] || "text-slate-900"
+                    );
                 },
             };
         }
