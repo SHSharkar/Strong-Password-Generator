@@ -37,7 +37,8 @@
         rel="stylesheet" />
 </head>
 
-<body class="bg-gradient-to-t from-indigo-300 from-10% via-sky-300 via-30% to-emerald-300 to-90% p-6 font-sans">
+<body
+    class="min-h-screen bg-gradient-to-t from-indigo-300 from-10% via-sky-300 via-30% to-emerald-300 to-90% p-6 font-sans">
     <div x-data="passwordGenerator()" x-init="generate()"
         class="mx-auto max-w-3xl rounded-lg border-2 bg-gradient-to-r from-gray-50 to-gray-100 p-6 md:p-8">
         <div
@@ -48,17 +49,14 @@
                 </h1>
             </a>
         </div>
-
         <p class="mb-6 text-base font-normal text-gray-600 md:text-lg">
             Create secure and random passwords to strengthen your online security.
             Don't Fall Victim into Cyber Attacks.
         </p>
-
         <div class="relative">
             <label for="length" class="block text-base font-medium text-green-600">Password Length</label>
             <input x-model.number="length" @input="validateLength()" type="number" min="8" max="128" id="length"
                 class="source-code-pro mt-1 block w-full rounded border-2 border-green-300 bg-white px-3 py-2 text-base font-medium text-green-700 shadow-sm focus:border-green-400 focus:outline-none focus:ring-green-400 md:text-lg" />
-
             <div x-show="messages.length" x-transition:enter="transition ease-out duration-200"
                 x-transition:enter-start="opacity-0 transform -translate-y-2"
                 x-transition:enter-end="opacity-100 transform translate-y-0"
@@ -69,21 +67,17 @@
                 <p x-text="messages.length"></p>
             </div>
         </div>
-
         <div class="mt-3 grid grid-cols-1 gap-y-3 sm:grid-cols-2 sm:gap-x-4">
-            <template x-for="(label, type) in {
-                uppercase: 'Include uppercase letters (A-Z)',
-                lowercase: 'Include lowercase letters (a-z)',
-                numbers: 'Include numbers (0-9)',
-                symbols: 'Include symbols (!@#$%^&*-_/=?+.)'
-            }" :key="type">
+            <template
+                x-for="(label, type) in {uppercase: 'Include uppercase letters (A-Z)',lowercase: 'Include lowercase letters (a-z)',numbers: 'Include numbers (0-9)',symbols: 'Include symbols (!@#$%^&*-_/=?+.)'}"
+                :key="type">
                 <div class="relative">
                     <label class="flex items-center">
                         <input x-model="options[type]" @change="updateOptions(type)" type="checkbox"
+                            :disabled="isLastEnabled(type)"
                             class="form-checkbox h-5 w-5 rounded border-gray-300 text-blue-600 transition duration-150 ease-in-out focus:ring-2 focus:ring-blue-500" />
                         <span class="ml-3 text-sm text-gray-700" x-text="label"></span>
                     </label>
-
                     <div x-show="messages[type]" x-transition:enter="transition ease-out duration-200"
                         x-transition:enter-start="opacity-0 transform -translate-y-2"
                         x-transition:enter-end="opacity-100 transform translate-y-0"
@@ -112,7 +106,6 @@
                         </svg>
                     </button>
                 </div>
-
                 <div x-show="messages.exclude" x-transition:enter="transition ease-out duration-200"
                     x-transition:enter-start="opacity-0 transform -translate-y-2"
                     x-transition:enter-end="opacity-100 transform translate-y-0"
@@ -128,14 +121,12 @@
                     </div>
                 </div>
             </div>
-
             <div class="relative mt-2 md:mt-10">
                 <label class="flex items-center">
                     <input type="checkbox" :checked="caseSensitiveExclusion" @change="toggleCaseSensitivity()"
                         class="form-checkbox h-5 w-5 rounded border-gray-300 text-blue-600 transition duration-150 ease-in-out focus:ring-2 focus:ring-blue-500" />
                     <span class="ml-3 text-base text-gray-700">Exclude both cases (a/A)</span>
                 </label>
-
                 <div x-show="messages.case" x-transition:enter="transition ease-out duration-200"
                     x-transition:enter-start="opacity-0 transform -translate-y-2"
                     x-transition:enter-end="opacity-100 transform translate-y-0"
@@ -144,7 +135,6 @@
                 </div>
             </div>
         </div>
-
         <div class="space-y-3">
             <button @click="generate()"
                 class="group relative w-full rounded border border-transparent bg-green-600 px-6 py-2 text-base font-semibold text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
@@ -156,7 +146,6 @@
                     <span x-text="messages.generate"></span>
                 </div>
             </button>
-
             <div class="space-y-4">
                 <div class="relative flex items-center justify-center">
                     <div @click="copyToClipboard()" @keyup.enter="copyToClipboard()" x-ref="password"
@@ -170,8 +159,51 @@
                         </div>
                     </div>
                 </div>
+                <div x-show="generationTime !== null" class="source-code-pro mb-2 mt-4">
+                    <div class="flex flex-col space-y-3">
+                        <div class="flex flex-wrap items-center justify-center gap-3">
+                            <div class="inline-flex items-center gap-2">
+                                <span class="text-sm font-semibold text-gray-600">Execution Time:</span>
+                                <span x-text="formatGenerationTime(generationTime)"
+                                    :class="getGenerationTimeClass(generationTime)"
+                                    class="inline-flex items-center rounded border px-3 py-1 text-xs font-medium"></span>
+                            </div>
 
-                <div class="space-y-1 text-sm text-slate-600">
+                            <div class="inline-flex items-center gap-2">
+                                <span class="text-sm font-semibold text-gray-600">Performance:</span>
+                                <span x-text="getPerformanceLabel(generationTime)"
+                                    :class="getGenerationTimeClass(generationTime)"
+                                    class="inline-flex items-center rounded border px-3 py-1 text-xs font-medium"></span>
+                            </div>
+                        </div>
+
+                        <div
+                            class="mt-2 flex flex-wrap items-center justify-center gap-2 text-center text-xs text-gray-600">
+                            <span class="font-semibold">Baseline:</span>
+                            <span
+                                class="flex-shrink-0 rounded border border-green-200 bg-green-50 px-1.5 py-0.5 text-green-700">
+                                ≤ 0.5ms Excellent
+                            </span>
+                            <span
+                                class="flex-shrink-0 rounded border border-blue-200 bg-blue-50 px-1.5 py-0.5 text-blue-700">
+                                ≤ 1.0ms Good
+                            </span>
+                            <span
+                                class="flex-shrink-0 rounded border border-yellow-200 bg-yellow-50 px-1.5 py-0.5 text-yellow-700">
+                                ≤ 2.0ms Moderate
+                            </span>
+                            <span
+                                class="flex-shrink-0 rounded border border-orange-200 bg-orange-50 px-1.5 py-0.5 text-orange-700">
+                                ≤ 3.0ms Slow
+                            </span>
+                            <span
+                                class="flex-shrink-0 rounded border border-red-200 bg-red-50 px-1.5 py-0.5 text-red-700">
+                                > 3.0ms Critical
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="source-code-pro space-y-1 text-sm text-slate-600">
                     <h3 class="font-semibold">Password Composition:</h3>
                     <div class="flex flex-wrap gap-4" aria-label="Password character type legend">
                         <template x-for="(info, type) in characterTypes" :key="type">
@@ -183,16 +215,6 @@
                             </div>
                         </template>
                     </div>
-                </div>
-
-                <div class="sr-only" role="note" aria-label="Password character type information">
-                    <div>Password contains:</div>
-                    <template x-for="(info, type) in characterTypes" :key="type">
-                        <div>
-                            <span x-text="(getPasswordStats()[type] || 0)"></span>
-                            <span x-text="info.label"></span>
-                        </div>
-                    </template>
                 </div>
             </div>
 
@@ -207,7 +229,6 @@
                         <span x-text="messages.copy"></span>
                     </div>
                 </button>
-
                 <button @click="reset()"
                     class="group relative flex-1 rounded border bg-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2">
                     <span>Reset to Default</span>
@@ -220,7 +241,6 @@
                 </button>
             </div>
         </div>
-
         <div x-show="password" class="mt-4 space-y-2 rounded border-2 p-4 transition-colors duration-200 md:mt-6"
             :class="getEvaluationClass()">
             <h2 class="text-xl font-semibold text-gray-700 md:text-2xl">
@@ -240,10 +260,9 @@
             </div>
         </div>
     </div>
-
     <footer class="mt-6 text-center text-base font-semibold text-gray-700 md:mt-8">
         <p>
-            &copy; {{current_year}}
+            &copy; <span id="copyright-year"></span>
             <a href="https://devops.com.bd" target="_blank" rel="noopener noreferrer" class="text-blue-600">DevOps</a>
             &
             <a href="https://github.com/SHSharkar" target="_blank" rel="noopener noreferrer" class="text-blue-600">Md.
@@ -258,7 +277,6 @@
             </span>
         </p>
     </footer>
-
     <script>
         function passwordGenerator() {
             return {
@@ -271,88 +289,128 @@
                 messages: {},
                 excludedChars: "",
                 caseSensitiveExclusion: false,
+                generationTime: null,
                 options: {
                     uppercase: true,
                     lowercase: true,
                     numbers: true,
                     symbols: true,
                 },
-
+                characterTypes: {
+                    uppercase: {
+                        chars: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                        label: "uppercase",
+                        indicator: "A-Z",
+                        color: "text-gray-800",
+                    },
+                    lowercase: {
+                        chars: "abcdefghijklmnopqrstuvwxyz",
+                        label: "lowercase",
+                        indicator: "a-z",
+                        color: "text-gray-600",
+                    },
+                    numbers: {
+                        chars: "0123456789",
+                        label: "numbers",
+                        indicator: "0-9",
+                        color: "text-pink-600",
+                    },
+                    symbols: {
+                        chars: "!@#$%^&*-_/=?+.",
+                        label: "special",
+                        indicator: "!@#",
+                        color: "text-blue-600",
+                    },
+                },
+                performanceMetrics: {
+                    thresholds: {
+                        excellent: 0.5,
+                        good: 1.0,
+                        moderate: 2.0,
+                        slow: 3.0,
+                        critical: 3.0,
+                    },
+                },
                 init() {
                     this.caseSensitiveExclusion = false;
                     this.generate();
                 },
-
+                isLastEnabled(type) {
+                    const enabledCount = Object.values(this.options).filter(
+                        Boolean,
+                    ).length;
+                    return enabledCount === 1 && this.options[type];
+                },
                 showMessage(key, text, duration = 2000) {
                     const newMessages = { ...this.messages };
                     newMessages[key] = text;
                     this.messages = newMessages;
-
                     setTimeout(() => {
                         const updatedMessages = { ...this.messages };
                         delete updatedMessages[key];
                         this.messages = updatedMessages;
                     }, duration);
                 },
-
                 copyToClipboard() {
-                    const password = this.password;
                     navigator.clipboard
-                        .writeText(password)
-                        .then(() => {
-                            this.showMessage("copy", "Password copied to clipboard!");
-                        })
-                        .catch(() => {
-                            this.showMessage("copy", "Failed to copy. Please try again.");
-                        });
+                        .writeText(this.password)
+                        .then(() =>
+                            this.showMessage("copy", "Password copied to clipboard!"),
+                        )
+                        .catch(() =>
+                            this.showMessage("copy", "Failed to copy. Please try again."),
+                        );
                 },
-
+                getSecureRandom(max) {
+                    const array = new Uint32Array(1);
+                    crypto.getRandomValues(array);
+                    return array[0] % max;
+                },
+                shuffleArray(array) {
+                    for (let i = array.length - 1; i > 0; i--) {
+                        const j = this.getSecureRandom(i + 1);
+                        [array[i], array[j]] = [array[j], array[i]];
+                    }
+                    return array;
+                },
                 generate() {
                     try {
+                        const startTime = performance.now();
                         const MIN_SECURE_LENGTH = 8;
                         const actualLength = Math.max(
                             MIN_SECURE_LENGTH,
                             parseInt(this.length) || 0,
                         );
                         this.length = parseInt(this.length) || 0;
-
-                        const uppercaseCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-                        const lowercaseCharacters = "abcdefghijklmnopqrstuvwxyz";
-                        const numberCharacters = "0123456789";
-                        const specialCharacters = "!@#$%^&*-_/=?+.";
-
-                        let characters = "";
-                        const excludeSet = new Set();
-
-                        [...this.excludedChars].forEach((char) => {
-                            excludeSet.add(char);
-                            if (
-                                this.caseSensitiveExclusion &&
-                                char.toLowerCase() !== char.toUpperCase()
-                            ) {
-                                excludeSet.add(char.toLowerCase());
-                                excludeSet.add(char.toUpperCase());
+                        let excludeSet = new Set(
+                            [...this.excludedChars]
+                                .map((char) => {
+                                    if (
+                                        this.caseSensitiveExclusion &&
+                                        char.toLowerCase() !== char.toUpperCase()
+                                    ) {
+                                        return [char.toLowerCase(), char.toUpperCase()];
+                                    }
+                                    return [char];
+                                })
+                                .flat(),
+                        );
+                        let availableChars = "";
+                        let requiredChars = [];
+                        Object.entries(this.characterTypes).forEach(([type, set]) => {
+                            if (this.options[type]) {
+                                const filteredChars = [...set.chars].filter(
+                                    (char) => !excludeSet.has(char),
+                                );
+                                if (filteredChars.length > 0) {
+                                    availableChars += filteredChars.join("");
+                                    requiredChars.push(
+                                        filteredChars[this.getSecureRandom(filteredChars.length)],
+                                    );
+                                }
                             }
                         });
-
-                        if (this.options.uppercase)
-                            characters += [...uppercaseCharacters]
-                                .filter((char) => !excludeSet.has(char))
-                                .join("");
-                        if (this.options.lowercase)
-                            characters += [...lowercaseCharacters]
-                                .filter((char) => !excludeSet.has(char))
-                                .join("");
-                        if (this.options.numbers)
-                            characters += [...numberCharacters]
-                                .filter((char) => !excludeSet.has(char))
-                                .join("");
-                        if (this.options.symbols)
-                            characters += [...specialCharacters]
-                                .filter((char) => !excludeSet.has(char))
-                                .join("");
-
-                        if (!characters.length) {
+                        if (!availableChars) {
                             this.password = "";
                             this.showMessage(
                                 "generate",
@@ -360,65 +418,32 @@
                             );
                             return;
                         }
-
-                        const result = [];
-                        const totalTypes = Object.values(this.options).filter(
-                            Boolean,
-                        ).length;
-                        let minCountPerType = Math.min(
-                            3,
-                            Math.floor(actualLength / totalTypes),
+                        const remainingLength = actualLength - requiredChars.length;
+                        const randomChars = Array.from(
+                            { length: remainingLength },
+                            () =>
+                                availableChars[this.getSecureRandom(availableChars.length)],
                         );
-                        minCountPerType = Math.max(1, minCountPerType);
-                        let totalMinCharacters = 0;
-
-                        const getFilteredChars = (sourceChars) =>
-                            [...sourceChars].filter((char) => !excludeSet.has(char));
-
-                        const processCharacterType = (chars, type) => {
-                            if (this.options[type]) {
-                                const available = getFilteredChars(chars);
-                                if (available.length) {
-                                    for (let i = 0; i < minCountPerType; i++) {
-                                        result.push(
-                                            available[this.getRandomInt(available.length)],
-                                        );
-                                        totalMinCharacters++;
-                                    }
-                                }
-                            }
-                        };
-
-                        processCharacterType(uppercaseCharacters, "uppercase");
-                        processCharacterType(lowercaseCharacters, "lowercase");
-                        processCharacterType(numberCharacters, "numbers");
-                        processCharacterType(specialCharacters, "symbols");
-
-                        const charArray = [...characters];
-                        for (let i = totalMinCharacters; i < actualLength; i++) {
-                            result.push(charArray[this.getRandomInt(charArray.length)]);
-                        }
-
-                        this.shuffleArray(result);
-                        const alphabetCharacters = getFilteredChars(
-                            uppercaseCharacters + lowercaseCharacters,
-                        );
-                        if (alphabetCharacters.length > 0) {
+                        const result = this.shuffleArray([
+                            ...requiredChars,
+                            ...randomChars,
+                        ]);
+                        const alphabetChars = availableChars.match(/[a-zA-Z]/g) || [];
+                        if (alphabetChars.length > 0) {
                             if (!/[a-zA-Z]/.test(result[0])) {
                                 result[0] =
-                                    alphabetCharacters[
-                                    this.getRandomInt(alphabetCharacters.length)
-                                    ];
+                                    alphabetChars[this.getSecureRandom(alphabetChars.length)];
                             }
                             if (!/[a-zA-Z]/.test(result[result.length - 1])) {
                                 result[result.length - 1] =
-                                    alphabetCharacters[
-                                    this.getRandomInt(alphabetCharacters.length)
-                                    ];
+                                    alphabetChars[this.getSecureRandom(alphabetChars.length)];
                             }
                         }
-
                         this.password = result.join("");
+                        const endTime = performance.now();
+                        this.generationTime = parseFloat(
+                            (endTime - startTime).toFixed(3),
+                        );
                         this.evaluate(this.password);
                         this.showMessage(
                             "generate",
@@ -429,20 +454,28 @@
                         this.showMessage("generate", "Failed to generate password");
                     }
                 },
-
-                getRandomInt(max) {
-                    const array = new Uint32Array(1);
-                    window.crypto.getRandomValues(array);
-                    return array[0] % max;
-                },
-
-                shuffleArray(array) {
-                    for (let i = array.length - 1; i > 0; i--) {
-                        const j = this.getRandomInt(i + 1);
-                        [array[i], array[j]] = [array[j], array[i]];
+                validateLength() {
+                    const MIN_LENGTH = 8;
+                    const MAX_LENGTH = 128;
+                    let inputLength = parseInt(this.length);
+                    if (isNaN(inputLength)) return;
+                    if (inputLength > MAX_LENGTH) {
+                        this.length = MAX_LENGTH;
+                        this.showMessage(
+                            "length",
+                            `Maximum length cannot exceed ${MAX_LENGTH} characters`,
+                        );
+                    } else if (inputLength < MIN_LENGTH) {
+                        this.length = inputLength;
+                        this.showMessage(
+                            "length",
+                            "For security, password will be generated with minimum 8 characters",
+                        );
+                    } else {
+                        this.length = inputLength;
                     }
+                    this.generate();
                 },
-
                 validateExcludedChars(value) {
                     const sanitized = [...new Set(value.replace(/\s+/g, ""))].join("");
                     if (sanitized !== value) {
@@ -450,25 +483,17 @@
                     }
                     this.generate();
                 },
-
                 clearExcludedChars() {
                     this.excludedChars = "";
                     this.generate();
                     this.showMessage("exclude", "Characters cleared");
                 },
-
                 toggleCaseSensitivity() {
                     this.caseSensitiveExclusion = !this.caseSensitiveExclusion;
-
-                    this.$nextTick(() => {
-                        this.generate();
-                        const status = this.caseSensitiveExclusion
-                            ? "enabled"
-                            : "disabled";
-                        this.showMessage("case", `Case-sensitive exclusion ${status}`);
-                    });
+                    this.generate();
+                    const status = this.caseSensitiveExclusion ? "enabled" : "disabled";
+                    this.showMessage("case", `Case-sensitive exclusion ${status}`);
                 },
-
                 reset() {
                     this.length = 18;
                     this.excludedChars = "";
@@ -479,42 +504,74 @@
                         numbers: true,
                         symbols: true,
                     };
-
-                    this.$nextTick(() => {
-                        this.generate();
-                        this.showMessage("reset", "Settings reset to default");
-                    });
+                    this.generate();
+                    this.showMessage("reset", "Settings reset to default");
                 },
-
-                validateLength() {
-                    const MAX_LENGTH = 128;
-                    let inputLength = parseInt(this.length);
-
-                    if (isNaN(inputLength)) {
+                updateOptions(type) {
+                    const enabledCount = Object.values(this.options).filter(
+                        Boolean,
+                    ).length;
+                    if (enabledCount === 1 && this.options[type]) {
+                        this.showMessage(
+                            type,
+                            "At least one character type must remain selected",
+                        );
                         return;
                     }
-
-                    if (inputLength > MAX_LENGTH) {
-                        this.length = MAX_LENGTH;
-                        this.showMessage(
-                            "length",
-                            `Maximum length cannot exceed ${MAX_LENGTH} characters`,
-                            2000,
-                        );
-                    } else if (inputLength < 8) {
-                        this.length = inputLength;
-                        this.showMessage(
-                            "length",
-                            "For security, password will be generated with minimum 8 characters",
-                            2000,
-                        );
-                    } else {
-                        this.length = inputLength;
-                    }
-
                     this.generate();
+                    const status = this.options[type] ? "enabled" : "disabled";
+                    const optionNames = {
+                        uppercase: "Uppercase",
+                        lowercase: "Lowercase",
+                        numbers: "Numbers",
+                        symbols: "Symbols",
+                    };
+                    this.showMessage(type, `${optionNames[type]}: ${status}`);
                 },
-
+                getCharacterStyle(char) {
+                    if (char.match(/[A-Z]/)) return this.characterTypes.uppercase.color;
+                    if (char.match(/[a-z]/)) return this.characterTypes.lowercase.color;
+                    if (char.match(/[0-9]/)) return this.characterTypes.numbers.color;
+                    return this.characterTypes.symbols.color;
+                },
+                getCharacterType(char) {
+                    if (char.match(/[A-Z]/)) return "uppercase";
+                    if (char.match(/[a-z]/)) return "lowercase";
+                    if (char.match(/[0-9]/)) return "numbers";
+                    return "symbols";
+                },
+                getFormattedPassword() {
+                    return this.password.split("").map((char, index) => ({
+                        char,
+                        style: this.getCharacterStyle(char),
+                        type: this.getCharacterType(char),
+                        id: `char-${index}`,
+                    }));
+                },
+                getPasswordStats() {
+                    return this.password.split("").reduce((stats, char) => {
+                        const type = this.getCharacterType(char);
+                        stats[type] = (stats[type] || 0) + 1;
+                        return stats;
+                    }, {});
+                },
+                evaluate(password) {
+                    const analysis = zxcvbn(password);
+                    this.score = analysis.score;
+                    this.crackTime =
+                        analysis.crack_times_display.offline_slow_hashing_1e4_per_second;
+                },
+                passwordScoreText() {
+                    return (
+                        {
+                            0: "too guessable",
+                            1: "very guessable",
+                            2: "somewhat guessable",
+                            3: "safely unguessable",
+                            4: "very unguessable",
+                        }[this.score] || ""
+                    );
+                },
                 getPasswordDisplayClass() {
                     return (
                         {
@@ -527,7 +584,6 @@
                         "bg-slate-50/90 border-slate-300 hover:bg-slate-100/80"
                     );
                 },
-
                 getEvaluationClass() {
                     return (
                         {
@@ -539,95 +595,6 @@
                         }[this.score] || "bg-slate-50 border-slate-300"
                     );
                 },
-
-                updateLength() {
-                    this.validateLength();
-                },
-
-                updateOptions(option) {
-                    this.generate();
-                    const status = this.options[option] ? "enabled" : "disabled";
-                    const optionNames = {
-                        uppercase: "Uppercase",
-                        lowercase: "Lowercase",
-                        numbers: "Numbers",
-                        symbols: "Symbols",
-                    };
-                    this.showMessage(option, `${optionNames[option]}: ${status}`);
-                },
-
-                characterTypes: {
-                    uppercase: {
-                        color: "text-gray-800",
-                        label: "uppercase letters",
-                        indicator: "A-Z",
-                    },
-                    lowercase: {
-                        color: "text-gray-600",
-                        label: "lowercase letters",
-                        indicator: "a-z",
-                    },
-                    numbers: {
-                        color: "text-pink-600",
-                        label: "numbers",
-                        indicator: "0-9",
-                    },
-                    special: {
-                        color: "text-blue-600",
-                        label: "special characters",
-                        indicator: "!@#",
-                    },
-                },
-
-                getCharacterStyle(char) {
-                    if (char.match(/[A-Z]/)) return this.characterTypes.uppercase.color;
-                    if (char.match(/[a-z]/)) return this.characterTypes.lowercase.color;
-                    if (char.match(/[0-9]/)) return this.characterTypes.numbers.color;
-                    return this.characterTypes.special.color;
-                },
-
-                getCharacterType(char) {
-                    if (char.match(/[A-Z]/)) return "uppercase";
-                    if (char.match(/[a-z]/)) return "lowercase";
-                    if (char.match(/[0-9]/)) return "numbers";
-                    return "special";
-                },
-
-                getFormattedPassword() {
-                    return this.password.split("").map((char, index) => ({
-                        char,
-                        style: this.getCharacterStyle(char),
-                        type: this.getCharacterType(char),
-                        id: `char-${index}`,
-                    }));
-                },
-
-                getPasswordStats() {
-                    return this.password.split("").reduce((stats, char) => {
-                        const type = this.getCharacterType(char);
-                        stats[type] = (stats[type] || 0) + 1;
-                        return stats;
-                    }, {});
-                },
-
-                evaluate(password) {
-                    const evaluation = zxcvbn(password);
-                    this.score = evaluation.score;
-                    this.crackTime =
-                        evaluation.crack_times_display.offline_slow_hashing_1e4_per_second;
-                },
-
-                passwordScoreText() {
-                    const scores = {
-                        0: "too guessable",
-                        1: "very guessable",
-                        2: "somewhat guessable",
-                        3: "safely unguessable",
-                        4: "very unguessable",
-                    };
-                    return scores[this.score] || "";
-                },
-
                 passwordScoreClass() {
                     return (
                         {
@@ -639,21 +606,52 @@
                         }[this.score] || "text-slate-900"
                     );
                 },
+                getGenerationTimeClass(timeInMs) {
+                    const time = parseFloat(timeInMs);
+                    const thresholds = this.performanceMetrics.thresholds;
+                    return {
+                        "bg-green-50 border-green-200 text-green-700":
+                            time <= thresholds.excellent,
+                        "bg-blue-50 border-blue-200 text-blue-700":
+                            time > thresholds.excellent && time <= thresholds.good,
+                        "bg-yellow-50 border-yellow-200 text-yellow-700":
+                            time > thresholds.good && time <= thresholds.moderate,
+                        "bg-orange-50 border-orange-200 text-orange-700":
+                            time > thresholds.moderate && time <= thresholds.slow,
+                        "bg-red-50 border-red-200 text-red-700":
+                            time > thresholds.critical,
+                    };
+                },
+                getPerformanceLabel(timeInMs) {
+                    const time = parseFloat(timeInMs);
+                    const thresholds = this.performanceMetrics.thresholds;
+                    if (time <= thresholds.excellent) return "Excellent";
+                    if (time <= thresholds.good) return "Good";
+                    if (time <= thresholds.moderate) return "Moderate";
+                    if (time <= thresholds.slow) return "Slow";
+                    return "Critical";
+                },
+                formatGenerationTime(timeInMs) {
+                    const time = parseFloat(timeInMs);
+                    if (time < 0.001) return `${(time * 1000).toFixed(2)}µs`;
+                    if (time < 1) return `${(time * 1000).toFixed(2)}µs`;
+                    if (time < 1000) return `${time.toFixed(2)}ms`;
+                    return `${(time / 1000).toFixed(2)}s`;
+                },
             };
         }
-
         document.addEventListener("alpine:init", () => {
-            Alpine.magic("clipboard", () => (subject) => {
-                return navigator.clipboard.writeText(subject);
-            });
+            Alpine.magic(
+                "clipboard",
+                () => (subject) => navigator.clipboard.writeText(subject),
+            );
         });
     </script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const footer = document.querySelector("footer p");
-            const year = new Date().getFullYear();
-            footer.innerHTML = footer.innerHTML.replace("{{current_year}}", year);
+            document.getElementById("copyright-year").textContent =
+                new Date().getFullYear();
         });
     </script>
 </body>
